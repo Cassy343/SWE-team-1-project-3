@@ -1,0 +1,26 @@
+#nav-bar {
+    border-radius: 0;
+}
+
+#nav-stack {
+    margin-left: 10px;
+}
+
+.nav-button {
+    padding-top: 14px;
+    padding-bottom: 14px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 0.3em;
+    margin: 0.3em;
+}
+
+.nav-button:hover {
+    background-color: #efefef;
+    cursor: pointer;
+}
+
+a.nav-link, a.nav-link:hover, a.nav-link:focus, a.nav-link:active {
+  text-decoration: none;
+  color: inherit;
+}
