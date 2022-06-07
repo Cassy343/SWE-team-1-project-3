@@ -22,7 +22,7 @@ router.get("/info", async (req, res, next) => {
     const id = req.query.id;
     const d = await getDoc(doc(db.db, "products", id))
     const seller = await getDoc(d.data().seller);
-    res.json({id: d.id, data: d.data(), sellerName: seller.data().name})
+    res.json({ ...d.data(), id: d.id, sellerName: seller.data().name })
 })
 
 module.exports = router
