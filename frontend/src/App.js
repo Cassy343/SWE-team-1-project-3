@@ -11,10 +11,10 @@ import { useReducer } from 'react';
 
 const sessionReducer = (session, action) => {
     switch (action.type) {
-        case 'set-token': {
+        case 'init': {
             console.log(`Auth token: ${action.payload.token}`);
 
-            return { ...session, token: action.payload.token };
+            return { ...session, token: action.payload.token, uid: action.payload.uid };
         }
         default:
             console.error(`Unknown session reduction action: ${action}`)
@@ -25,10 +25,13 @@ const sessionReducer = (session, action) => {
 const App = () => {
     const [session, dispatch] = useReducer(sessionReducer, {});
 
-    const setToken = token => {
+    const initSession = (token, uid) => {
         dispatch({
-            type: 'set-token',
-            payload: { token: token }
+            type: 'init',
+            payload: {
+                token: token,
+                uid: uid
+            }
         });
     };
 
@@ -37,7 +40,7 @@ const App = () => {
             <Routes>
                 <Route
                     path='/' // goes to login page
-                    element={<Login setToken={setToken} />}
+                    element={<Login initSession={initSession} />}
                 />
                 <Route
                     path='/'
