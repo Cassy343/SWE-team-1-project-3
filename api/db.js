@@ -193,7 +193,7 @@ module.exports = {
     login: login,
     createAccount: createAccount,
     logout: logout,
-    validateToken,
+    validateReq: validateReq,
     getUser: getUser,
     userUidToDocId: userUidToDocId,
     userUidToDoc: userUidToDoc

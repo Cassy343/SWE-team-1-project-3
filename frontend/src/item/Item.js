@@ -14,7 +14,11 @@ const Item = (props) => {
     const session = useContext(SessionContext);
     
     useEffect(() => {
-        axios.get(`products/info?id=${id}`)
+        axios.get(`products/info?id=${id}`, {
+            headers: {
+                'access-token': session.token
+            }
+        })
             .then(res => {
                 console.log(res);
                 setItem(res.data)
