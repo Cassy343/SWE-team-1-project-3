@@ -7,7 +7,7 @@ const Products = (props) => {
 
     // GET products
     useEffect(() => {
-        fetch("http://localhost:8000/products/all")
+        fetch("products/all")
         .then((res) => res.json())
         .then((text) => {
             text.result.sort((a,b) => {
@@ -33,14 +33,15 @@ const ProductCard = (props) => {
     return (
     <>
         <Card variant="outlined" sx={{width: 300, height: 350}}>
+        <CardActionArea component={Link} to="/item" state={{ id: id }}>
             <CardMedia
                 component="img"
-                height="70%"
+                height="240"
                 width="100%"
                 image={data.image}
                 alt={data.name} 
             />
-        <CardActionArea component={Link} to="/item" state={{ id: id }}>
+        
             <CardContent >
                 <Typography sx={{fontWeight: 'bold'}} variant="h6">{data.name}</Typography>
                 <Typography>Seller: {sellerName}</Typography>
