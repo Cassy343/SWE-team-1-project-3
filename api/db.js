@@ -19,6 +19,7 @@ const auth = getAuth(app);
 
 const uidToDocId = {};
 const userData = {};
+const authenticated = {};
 
 const addUser = async (uid, name) => {
     const dc = await addDoc(collection(db, 'users'), {
@@ -48,12 +49,17 @@ const createAccount = async (name, email, password) => {
         console.error(`Error adding user to database: ${error}`);
         throw error;
     }
+    
+    const accessToken = credentials.user.stsTokenManager.accessToken;
+    const uid = credentials.user.uid;
+
+    authenticated[accessToken] = uid;
 
     return {
         status: 'ok',
         data: {
-            accessToken: credentials.user.stsTokenManager.accessToken,
-            uid: credentials.user.uid
+            accessToken: accessToken,
+            uid: uid
         }
     };
 };
@@ -62,11 +68,16 @@ const login = async (email, password) => {
     try {
         let credentials = await signInWithEmailAndPassword(auth, email, password);
 
+        const accessToken = credentials.user.accessToken;
+        const uid = credentials.user.uid;
+
+        authenticated[accessToken] = uid;
+
         return {
             status: 'ok',
             data: {
-                accessToken: credentials.user.accessToken,
-                uid: credentials.user.uid
+                accessToken: accessToken,
+                uid: uid
             }
         };
     } catch (error) {
@@ -76,6 +87,19 @@ const login = async (email, password) => {
         };
     }
 }
+
+const logout = token => {
+    delete authenticated[token];
+};
+
+const validateReq = req => {
+    if (req.headers['access-token']) {
+        const token = req.headers['access-token'];
+        return authenticated[token] ? authenticated[token] : null;
+    } else {
+        return null;
+    }
+};
 
 const getUser = async docId => {
     if (userData[docId]) {
@@ -168,6 +192,8 @@ module.exports = {
     db: db,
     login: login,
     createAccount: createAccount,
+    logout: logout,
+    validateToken,
     getUser: getUser,
     userUidToDocId: userUidToDocId,
     userUidToDoc: userUidToDoc

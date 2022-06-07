@@ -20,7 +20,7 @@ const NavButton = (props) => {
     );
 };
 
-const Nav = (_props) => {
+const Nav = (props) => {
     const [selectedLink, setSelectedLink] = useState(0);
 
     const links = [
@@ -65,13 +65,16 @@ const Nav = (_props) => {
                         </Box>)
                     }
                     <Box
-                        onClick={() => {
-                            window.location.assign('http://localhost:3000/');
-                        }}
+                        onClick={props.logout}
                     >
-                        <NavButton selected={false}>
-                            Logout
-                        </NavButton>
+                        <Link
+                            to='/'
+                            className='nav-link'
+                        >
+                            <NavButton selected={false}>
+                                Logout
+                            </NavButton>
+                        </Link>
                     </Box>
                 </Stack>
             </nav>
