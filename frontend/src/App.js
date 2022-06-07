@@ -10,11 +10,59 @@ import { SessionContext } from './Context';
 import { useReducer } from 'react';
 
 const sessionReducer = (session, action) => {
+    console.log(action.type);
     switch (action.type) {
         case 'init': {
             console.log(`Auth token: ${action.payload.token}`);
 
             return { ...session, token: action.payload.token, uid: action.payload.uid };
+        }
+        case 'add-to-cart': {
+            const id = action.payload.id;
+            const cart = { ...session.cart };
+
+            if (!cart[id]) {
+                cart[id] = {
+                    ...action.payload.item,
+                    qty: 0
+                };
+            }
+
+            cart[id] = {
+                ...cart[id],
+                qty: cart[id].qty + 1
+            };
+            
+            return { ...session, cart: cart };
+        }
+        case 'remove-one-from-cart': {
+            const id = action.payload.id;
+            const cart = { ...session.cart };
+
+            if (!cart[id]) {
+                return session;
+            }
+
+            cart[id] = {
+                ...cart[id],
+                qty: cart[id].qty - 1
+            };
+
+            if (cart[id].qty <= 0) {
+                delete cart[id];
+            }
+            
+            return { ...session, cart: cart };
+        }
+        case 'remove-from-cart': {
+            const id = action.payload.id;
+            const cart = { ...session.cart };
+
+            if (cart[id]) {
+                delete cart[id];
+            }
+            
+            return { ...session, cart: cart };
         }
         default:
             console.error(`Unknown session reduction action: ${action}`)
@@ -23,7 +71,9 @@ const sessionReducer = (session, action) => {
 };
 
 const App = () => {
-    const [session, dispatch] = useReducer(sessionReducer, {});
+    const [session, dispatch] = useReducer(sessionReducer, {
+        cart: {}
+    });
 
     const initSession = (token, uid) => {
         dispatch({
@@ -52,7 +102,21 @@ const App = () => {
                     />
                     <Route
                         path='/item'
-                        element={<Item />}
+                        element={<Item
+                            addToCart={(id, item) => dispatch({
+                                type: 'add-to-cart',
+                                payload: {
+                                    id: id,
+                                    item: item
+                                }
+                            })}
+                            removeOneFromCart={id => dispatch({
+                                type: 'remove-one-from-cart',
+                                payload: {
+                                    id: id
+                                }
+                            })}
+                        />}
                     />
                     <Route
                         path='/cart'

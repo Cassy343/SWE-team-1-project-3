@@ -28,7 +28,7 @@ const Login = (props) => {
     const [error, setError] = useState(null);
 
     if (session.token) {
-        window.location.replace(`${REDIRECT_URI}/products`);
+        window.location.replace(`${REDIRECT_URI}/item`);
         return (<></>);
     }
 
