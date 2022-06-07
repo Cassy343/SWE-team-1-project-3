@@ -5,6 +5,7 @@ import { SessionContext } from "../Context";
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import { useLocation } from "react-router";
+import './Item.css';
 
 const Item = (props) => {
     const location = useLocation();
@@ -13,21 +14,12 @@ const Item = (props) => {
     const session = useContext(SessionContext);
     
     useEffect(() => {
-        // axios.get(`products?id=${props.id}`)
-        //     .then(res => setItem(res.data()))
-        //     .catch(e => console.error(e));
-        setItem({
-            date_posted: new Date(),
-            description: 'black gel pens',
-            name: '10-pack pens',
-            image: 'https://i5.walmartimages.com/asr/ccdd2273-3a13-4d2d-9123-c2b3fabdf396.23cbb880147069a22b93c92b86a9ca06.jpeg?odnHeight=612&odnWidth=612&odnBg=FFFFFF',
-            price: 5.99,
-            seller: {
-                id: 'az0yvB7JE0zHkk7mGTCb',
-                uid: 'PiO0LdBIBGOEpDvm2bt1H86G9Au2',
-                name: 'Ian'
-            }
-        });
+        axios.get(`products/info?id=${id}`)
+            .then(res => {
+                console.log(res);
+                setItem(res.data)
+            })
+            .catch(e => console.error(e));
     }, []);
 
     if (!item) {
@@ -45,6 +37,7 @@ const Item = (props) => {
         <img
             src={item.image}
             alt={item.name}
+            id='item-image'
         />
         <Card
             sx={{
@@ -59,7 +52,7 @@ const Item = (props) => {
             <Typography>{item.description}</Typography>
             <Box height='2rem' />
             {
-                session.cart[props.id]
+                session.cart[id]
                 ? <Box
                     display='flex'
                     flexDirection='row'
@@ -71,7 +64,7 @@ const Item = (props) => {
                     >
                         <RemoveIcon />
                     </IconButton>
-                    <Typography>{session.cart[props.id].qty} added</Typography>
+                    <Typography>{session.cart[id].qty} added</Typography>
                     <IconButton
                         size='small'
                         onClick={() => props.addToCart(id, item)}
@@ -85,7 +78,7 @@ const Item = (props) => {
                 >Add to Cart</Button>
             }
             <Box height='2rem' />
-            <Typography color='text.secondary'>This item was posted by {item.seller.name}</Typography>
+            <Typography color='text.secondary'>This item was posted by {item.sellerName}</Typography>
         </Card>
     </Box>);
 };

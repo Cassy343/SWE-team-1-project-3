@@ -10,7 +10,6 @@ import { SessionContext } from './Context';
 import { useReducer } from 'react';
 
 const sessionReducer = (session, action) => {
-    console.log(action.type);
     switch (action.type) {
         case 'init': {
             console.log(`Auth token: ${action.payload.token}`);
