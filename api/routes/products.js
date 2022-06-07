@@ -2,9 +2,15 @@ const express = require("express")
 const router = express.Router()
 const db = require("../db")
 const {getDocs, collection, doc, getDoc, query, where, addDoc, Timestamp } = require("firebase/firestore")
+const { validateReq } = require("../db")
 
 // gets all products
 router.get("/all", async (req, res, next) => {
+    if (!validateReq(req)) {
+        res.sendStatus(401);
+        return;
+    }
+
     const allDocData = []
     const docs = await getDocs(collection(db.db, "products"))
     docs.forEach((d) => {
@@ -19,6 +25,11 @@ router.get("/all", async (req, res, next) => {
 
 //gets one product
 router.get("/info", async (req, res, next) => {
+    if (!validateReq(req)) {
+        res.sendStatus(401);
+        return;
+    }
+
     const id = req.query.id;
     const d = await getDoc(doc(db.db, "products", id))
     const seller = await getDoc(d.data().seller);
@@ -27,12 +38,13 @@ router.get("/info", async (req, res, next) => {
 
 // gets all docs for a user
 router.get('/', async (req, res, next) => {
-    const q1 = query(
-        collection(db.db, 'users'), where('uid', '==', req.query.user)
-    );
-    const d1 = await getDocs(q1).then(docs => docs.docs);
-    const firestoreID = d1[0].id;
+    const uid = validateReq(req);
+    if (!uid) {
+        res.sendStatus(401);
+        return;
+    }
 
+    const firestoreID = db.userUidToDocId(uid);
 
     const q2 = query(
         collection(db.db, 'products'), where('seller', '==', doc(db.db, 'users/' + firestoreID))
@@ -45,11 +57,13 @@ router.get('/', async (req, res, next) => {
 
 // posts new product
 router.post('/', async (req, res, next) => {
-    const q1 = query(
-        collection(db.db, 'users'), where('uid', '==', req.query.user)
-    );
-    const d1 = await getDocs(q1).then(docs => docs.docs);
-    const firestoreID = d1[0].id;
+    const uid = validateReq(req);
+    if (!uid) {
+        res.sendStatus(401);
+        return;
+    }
+
+    const firestoreID = db.userUidToDocId(uid);
 
     const product = {
         name: req.body.name,
