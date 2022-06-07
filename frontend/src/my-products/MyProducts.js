@@ -2,6 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import {Link} from "react-router-dom";
 import axios from "axios";
 import { SessionContext } from '../Context'
+import { uploadFile } from 'react-s3';
 
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -25,26 +26,28 @@ const Input = styled('input')({
 const MyProducts = (props) => {
 
   const session = useContext(SessionContext);
-  const url = "products?user=" + session.uid;
+  const url = "http://localhost:8000/products?user=PiO0LdBIBGOEpDvm2bt1H86G9Au2";
 
   const [newProductName, setNewProductName] = useState("");
   const [newProductPrice, setNewProductPrice] = useState(0);
   const [newProductDescription, setNewProductDescription] = useState(0);
   const [newProductImage, setNewProductImage] = useState(null);
   const [products, setProducts] = useState([]);
+  const [file, setFile] = useState(null)
 
   useEffect(() => {
     fetch(url)
     .then((res) => res.json())
     .then((text) => {
         const newProducts = text.result.map(p => {
+          console.log(p)
             return {
                 id: p.id,
                 name: p.name,
                 price: p.price,
                 description: p.description,
                 image: p.image,
-                date: p.date,
+                date_posted: p.date_posted,
             };
         })
 
@@ -54,24 +57,34 @@ const MyProducts = (props) => {
 }, [])
 
   const createProduct = async () => {
-    console.log(newProductName);
-    console.log(newProductDescription);
-    console.log(newProductPrice);
-    console.log(newProductImage);
+    await uploadFile(file, config)
+      .then(data => {setNewProductImage(data)})
+      .catch(err => console.error(err))
     if(newProductImage) {
-      const res = await axios.post("products", {
+      const res = await axios.post(url, {
         name: newProductName,
         price: newProductPrice,
         description: newProductDescription,
         image: newProductImage,
-        date: new Date(),
       })
       setProducts([...products, res.data]);
     }
   }
+
+  const s3bucket = process.env.s3bucket;
+  const region = process.env.region;
+  const accessKey = process.env.accessKey;
+  const secretAccessKey = process.env.secretAccessKey;
+  const config = {
+      bucketName: s3bucket,
+      region: region,
+      accessKeyId: accessKey,
+      secretAccessKey: secretAccessKey,
+  }
   const handleFileInput = (e) => {
-    setNewProductImage(e.target.files[0]);
-}
+    setFile(e.target.files[0])
+    
+  }
 
   return (<div style={{ textAlign: 'center', marginLeft: '70px', marginRight: '70px', marginBottom: '70px'}}>
       <h1>My Products</h1>
@@ -93,7 +106,7 @@ const MyProducts = (props) => {
             <FileInput
               id="standard-adornment-amount"
               helperText = "Product Price ($)"
-              onChange={(e) => setNewProductPrice(Number(e.target.value).toFixed(2))}
+              onChange={(e) => setNewProductPrice(Number(e.target.value))}
               startAdornment={<InputAdornment position="start">$</InputAdornment>}
             />
             <FormHelperText id="price-helper-text">Price</FormHelperText>
@@ -111,7 +124,7 @@ const MyProducts = (props) => {
           <Input accept="image/*" id="contained-button-file" multiple type="file" onChange={handleFileInput}/>
           <Button variant="outlined" component="span">Upload Image</Button>
           </label>
-          {newProductImage ? <p style={{ fontSize: 12 }}>{newProductImage.name}</p>:<p style={{ fontSize: 12 }}> </p>}
+          {file ? <p style={{ fontSize: 12 }}>{file.name}</p>:<p style={{ fontSize: 12 }}> </p>}
           <br></br>
           <Button variant="contained" sx= {{  }} onClick={createProduct}>Post</Button>
           <p></p>
@@ -158,7 +171,7 @@ const MyProducts = (props) => {
                   {p.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                  ${p.price}
+                  ${p.price.toFixed(2)}
                   </Typography>
               </CardContent>
           </CardActionArea>
