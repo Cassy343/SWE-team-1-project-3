@@ -1,23 +1,8 @@
 import { Button, ButtonGroup, Stack, TextField, Typography } from "@mui/material";
 import { useContext, useRef, useState } from "react";
 import { SessionContext } from "../Context";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { initializeApp } from "firebase/app";
 import axios from "axios";
-
-const REDIRECT_URI = 'http://localhost:3000';
-
-const firebaseConfig = {
-    apiKey: process.env.REACT_APP_apiKey,
-    authDomain: process.env.REACT_APP_authDomain,
-    projectId: process.env.REACT_APP_projectId,
-    storageBucket: process.env.REACT_APP_storageBucket,
-    messagingSenderId: process.env.REACT_APP_messagingSenderId,
-    appId: process.env.REACT_APP_appId
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+import { Navigate } from 'react-router-dom';
 
 const Login = (props) => {
     const session = useContext(SessionContext);
@@ -28,46 +13,54 @@ const Login = (props) => {
     const [error, setError] = useState(null);
 
     if (session.token) {
-        window.location.replace(`${REDIRECT_URI}/products`);
-        return (<></>);
+        return (<>
+            <Navigate to={`/products`} />
+        </>);
     }
 
     const tryCreateAccount = () => {
-        createUserWithEmailAndPassword(auth, emailRef.current.value, passwordRef.current.value)
-            .then(credentials => {
-                axios.post('users', {
-                    uid: credentials.user.uid,
-                    name: nameRef.current.value
-                })
-                .then(_res => props.initSession(credentials.user.accessToken, credentials.user.uid))
-                .catch(e => {
-                    console.error(e);
-                    setError(`Failed to create account: ${e}`);
-                });
-            })
-            .catch(error => {
-                if (error.code === 'auth/weak-password') {
+        axios.post('auth/login', {
+            name: nameRef.current.value,
+            email: emailRef.current.value,
+            password: passwordRef.current.value
+        }).then(res => {
+            const content = res.data;
+            
+            if (content.status === 'ok') {
+                props.initSession(content.data.accessToken, content.data.uid);
+            } else {
+                if (content.data.code === 'auth/weak-password') {
                     setError('Password should be at least 6 characters');
-                } else if (error.code === 'auth/email-already-in-use') {
+                } else if (content.data.code === 'auth/email-already-in-use') {
                     setError('This email is already in use. Try logging in instead.');
                 } else {
-                    console.error(`Unexpected error when creating account: ${error.code} ${error.message}`);
+                    console.error(`Unexpected error when creating account: ${content.data}`);
                 }
-            });
+            }
+        }).catch(error => {
+            console.error(`Unexpected error when creating account: ${error}`);
+        });
     };
 
     const tryLogin = () => {
-        signInWithEmailAndPassword(auth, emailRef.current.value, passwordRef.current.value)
-            .then(credentials => {
-                props.initSession(credentials.user.accessToken, credentials.user.uid);
-            })
-            .catch(error => {
-                if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+        axios.put('auth/login', {
+            email: emailRef.current.value,
+            password: passwordRef.current.value
+        }).then(res => {
+            const content = res.data;
+
+            if (content.status === 'ok') {
+                props.initSession(content.data.accessToken, content.data.uid);
+            } else {
+                if (content.data.code === 'auth/wrong-password' || content.data.code === 'auth/user-not-found') {
                     setError('Incorrect email or password');
                 } else {
-                    console.error(`Unexpected error when logging in: ${error.code} ${error.message}`);
+                    console.error(`Unexpected error when logging in: ${content.data}`);
                 }
-            });
+            }
+        }).catch(error => {
+            console.error(`Unexpected error when logging in: ${error}`);
+        });
     };
 
     return (<>
