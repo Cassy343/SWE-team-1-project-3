@@ -15,10 +15,6 @@ const Products = (props) => {
             setProducts(text.result);
         })
         .catch((err) => console.log(err))
-
-        fetch("http://localhost:8000/products/info?id=" + "HNKZ8RiItI5l0wLYgfe8")
-        .then((res) => res.json())
-        .then((text) => console.log(text.id, text.data, text.sellerName))
     }, [])
 
     return (<>
