@@ -12,8 +12,6 @@ import { useReducer } from 'react';
 const sessionReducer = (session, action) => {
     switch (action.type) {
         case 'init': {
-            console.log(`Auth token: ${action.payload.token}`);
-
             return { ...session, token: action.payload.token, uid: action.payload.uid };
         }
         case 'add-to-cart': {

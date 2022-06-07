@@ -1,5 +1,6 @@
 const { initializeApp } = require("firebase/app");
 const { getFirestore, query, collection, where, getDocs, getDoc, doc, addDoc } = require('firebase/firestore');
+const { signInWithEmailAndPassword, createUserWithEmailAndPassword, getAuth } = require("firebase/auth");
 require('dotenv').config();
 
 const firebaseConfig = {
@@ -14,6 +15,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 const uidToDocId = {};
 const userData = {};
@@ -27,6 +29,53 @@ const addUser = async (uid, name) => {
     uidToDocId[uid] = dc.id;
     return dc.id;
 };
+
+const createAccount = async (name, email, password) => {
+    let credentials;
+
+    try {
+        credentials = await createUserWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+        return {
+            status: 'error',
+            data: error
+        };
+    }
+
+    try {
+        await addUser(credentials.user.uid, name);
+    } catch (error) {
+        console.error(`Error adding user to database: ${error}`);
+        throw error;
+    }
+
+    return {
+        status: 'ok',
+        data: {
+            accessToken: credentials.user.stsTokenManager.accessToken,
+            uid: credentials.user.uid
+        }
+    };
+};
+
+const login = async (email, password) => {
+    try {
+        let credentials = await signInWithEmailAndPassword(auth, email, password);
+
+        return {
+            status: 'ok',
+            data: {
+                accessToken: credentials.user.accessToken,
+                uid: credentials.user.uid
+            }
+        };
+    } catch (error) {
+        return {
+            status: 'error',
+            data: error
+        };
+    }
+}
 
 const getUser = async docId => {
     if (userData[docId]) {
@@ -117,7 +166,8 @@ const userUidToDoc = async uid => {
 
 module.exports = {
     db: db,
-    addUser: addUser,
+    login: login,
+    createAccount: createAccount,
     getUser: getUser,
     userUidToDocId: userUidToDocId,
     userUidToDoc: userUidToDoc
