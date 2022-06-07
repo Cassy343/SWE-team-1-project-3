@@ -45,7 +45,7 @@ const Item = (props) => {
         />
         <Card
             sx={{
-                minWidth: '20vw',
+                width: '20vw',
                 minHeight: '25vh',
                 padding: '1rem'
             }}
