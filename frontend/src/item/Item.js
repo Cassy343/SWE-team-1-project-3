@@ -14,7 +14,11 @@ const Item = (props) => {
     const session = useContext(SessionContext);
     
     useEffect(() => {
-        axios.get(`products/info?id=${id}`)
+        axios.get(`products/info?id=${id}`, {
+            headers: {
+                'access-token': session.token
+            }
+        })
             .then(res => {
                 console.log(res);
                 setItem(res.data)
@@ -41,7 +45,7 @@ const Item = (props) => {
         />
         <Card
             sx={{
-                minWidth: '20vw',
+                width: '20vw',
                 minHeight: '25vh',
                 padding: '1rem'
             }}

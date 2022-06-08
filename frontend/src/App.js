@@ -8,6 +8,7 @@ import Cart from './cart/Cart';
 import MyProducts from './my-products/MyProducts';
 import { SessionContext } from './Context';
 import { useReducer } from 'react';
+import axios from 'axios';
 
 const sessionReducer = (session, action) => {
     switch (action.type) {
@@ -61,6 +62,8 @@ const sessionReducer = (session, action) => {
             
             return { ...session, cart: cart };
         }
+        case 'logout':
+            return { ...session, token: null, uid: null };
         default:
             console.error(`Unknown session reduction action: ${action}`)
             return session;
@@ -82,6 +85,24 @@ const App = () => {
         });
     };
 
+    const logout = () => {
+        if (!session.token) {
+            return;
+        }
+
+        axios.delete('auth', {
+            headers: {
+                'access-token': session.token
+            }
+        });
+
+        dispatch({ type: 'logout', payload: null });
+    };
+
+    window.addEventListener("beforeunload", _e => {  
+        logout();
+    });
+
     return (<SessionContext.Provider value={session}>
         <BrowserRouter className='App'>
             <Routes>
@@ -91,7 +112,7 @@ const App = () => {
                 />
                 <Route
                     path='/'
-                    element={<Nav />}
+                    element={<Nav logout={logout} />}
                 >
                     <Route
                         path='/products'
