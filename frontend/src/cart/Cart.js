@@ -1,4 +1,4 @@
-import Product from '../Components/Product';
+import Product from './Product';
 import Receipt from './Receipt'
 import {Stack} from '@mui/material'
 import './Cart.css';
