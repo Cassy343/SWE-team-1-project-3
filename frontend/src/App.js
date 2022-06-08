@@ -72,10 +72,15 @@ const sessionReducer = (session, action) => {
 
 const App = () => {
     const [session, dispatch] = useReducer(sessionReducer, {
-        cart: {}
+        cart: {},
+        token: window.localStorage.getItem('token'),
+        uid: window.localStorage.getItem('uid')
     });
 
     const initSession = (token, uid) => {
+        window.localStorage.setItem('token', token);
+        window.localStorage.setItem('uid', uid);
+
         dispatch({
             type: 'init',
             payload: {
@@ -90,6 +95,9 @@ const App = () => {
             return;
         }
 
+        window.localStorage.removeItem('token');
+        window.localStorage.removeItem('uid');
+
         axios.delete('auth', {
             headers: {
                 'access-token': session.token
@@ -98,10 +106,6 @@ const App = () => {
 
         dispatch({ type: 'logout', payload: null });
     };
-
-    window.addEventListener("beforeunload", _e => {  
-        logout();
-    });
 
     return (<SessionContext.Provider value={session}>
         <BrowserRouter className='App'>

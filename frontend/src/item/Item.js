@@ -26,6 +26,8 @@ const Item = (props) => {
     const [item, setItem] = useState(null);
     const session = useContext(SessionContext);
     const [removingFromCart, setRemovingFromCart] = useState(false);
+    const [reviewing, setReviewing] = useState(false);
+    const [rating, setRating] = useState(0);
     
     useEffect(() => {
         axios.get(`products/info?id=${id}`, {
@@ -128,6 +130,20 @@ const Item = (props) => {
                 </Box>
             }
             <Box height='2rem' />
+            {
+                item.ratings[session.uid]
+                ? <Box>
+                    <Typography>You rated this item:</Typography>
+                    <StarRatings
+                        rating={item.ratings[session.uid].rating}
+                        starDimension='35px'
+                        starSpacing='5px'
+                        starRatedColor='rgb(255,215,0)'
+                    />
+                </Box>
+                : <Button onClick={() => setReviewing(true)}>Add Review</Button>
+            }
+            <Box height='2rem' />
             <Typography color='text.secondary'>This item was posted by {item.sellerName}</Typography>
         </Card>
 
@@ -152,6 +168,59 @@ const Item = (props) => {
                     onClick={() => {
                         setRemovingFromCart(false);
                         props.removeOneFromCart(id);
+                    }}
+                    variant='contained'
+                >Confirm</Button>
+            </Box>
+        </Modal>
+
+        <Modal
+            open={reviewing}
+            onClose={() => {
+                setRating(0);
+                setReviewing(false);
+            }}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box sx={modalStyle}>
+                <Typography
+                    variant='h4'
+                >Rate this item out of 5:</Typography>
+                <Box height='1rem' />
+                <StarRatings
+                    rating={rating}
+                    changeRating={newRating => setRating(newRating)}
+                    starDimension='35px'
+                    starSpacing='5px'
+                    starRatedColor='rgb(255,215,0)'
+                    starHoverColor='rgb(255,215,0)'
+                />
+                <Box height='1rem' />
+                <Typography
+                    color='text.secondary'
+                    sx={{ fontSize: '1.5em' }}
+                >Click outside the box to cancel.</Typography>
+                <Box height='1rem' />
+                <Button
+                    color='success'
+                    onClick={() => {
+                        const newRatings = { ...item.ratings };
+                        const review = {
+                            rating: rating
+                        };
+                        newRatings[session.uid] = review;
+                        console.log(newRatings);
+                        setItem({
+                            ...item,
+                            ratings: newRatings
+                        });
+                        setReviewing(false);
+                        axios.put(`products/ratings?id=${id}`, review, {
+                            headers: {
+                                'access-token': session.token
+                            }
+                        });
                     }}
                     variant='contained'
                 >Confirm</Button>
