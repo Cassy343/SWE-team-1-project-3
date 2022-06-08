@@ -6,6 +6,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import { useLocation } from "react-router";
 import './Item.css';
+import StarRatings from "react-star-ratings/build/star-ratings";
 
 const modalStyle = {
     position: 'absolute',
@@ -42,6 +43,13 @@ const Item = (props) => {
     if (!item) {
         return (<></>);
     }
+
+    const reviews = Object.values(item.ratings);
+    const avgRating = reviews.length === 0
+        ? null
+        : reviews
+            .map(review => review.rating)
+            .reduce((sum, x) => sum + x, 0) / reviews.length;
 
     return (<Box
         width='100vw'
@@ -99,6 +107,25 @@ const Item = (props) => {
                     variant='contained'
                     onClick={() => props.addToCart(id, item)}
                 >Add to Cart</Button>
+            }
+            <Box height='2rem' />
+            {
+                avgRating === null
+                ? <Box>
+                    <Typography>This item does not have any ratings yet. Be the first to rate this item!</Typography>
+                </Box>
+                : <Box>
+                    <StarRatings
+                        rating={avgRating}
+                        starDimension='35px'
+                        starSpacing='5px'
+                        starRatedColor='rgb(255,215,0)'
+                    />
+                    <Typography
+                        color='text.secondary'
+                        sx={{ fontSize: '0.75rem' }}
+                    >Based on {reviews.length} rating{reviews.length !== 1 ? 's' : ''}</Typography>
+                </Box>
             }
             <Box height='2rem' />
             <Typography color='text.secondary'>This item was posted by {item.sellerName}</Typography>
