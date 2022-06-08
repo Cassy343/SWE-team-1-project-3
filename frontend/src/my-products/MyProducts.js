@@ -40,7 +40,7 @@ const config = {
 const MyProducts = (props) => {
 
   const session = useContext(SessionContext);
-  const url = "http://localhost:8000/products?user=PiO0LdBIBGOEpDvm2bt1H86G9Au2";
+  const url = "http://localhost:8000/products/";
   
 
   const [newProductName, setNewProductName] = useState("");
@@ -53,8 +53,11 @@ const MyProducts = (props) => {
   const [progress , setProgress] = useState(0);
 
   useEffect(() => {
-    console.log("reloading")
-    fetch(url)
+    fetch("products", {
+      headers: {
+          'access-token': session.token
+      }
+  })
     .then((res) => res.json())
     .then((text) => setProducts(text.result))
     .catch((err) => console.log(err))
@@ -70,12 +73,19 @@ const MyProducts = (props) => {
     */
 
     //if(newProductImage) {
-      const res = await axios.post(url, {
-        name: newProductName,
-        price: newProductPrice,
-        description: newProductDescription,
-        image: newProductImage,
-      })
+      const res = await axios.post(
+        "products",
+        {
+          name: newProductName,
+          price: newProductPrice,
+          description: newProductDescription,
+          image: newProductImage,
+        },
+        {
+        headers: {
+        'access-token': session.token
+        }
+        })
       setProducts([...products, res.data]);
       setChange(change + 1);
     //}
