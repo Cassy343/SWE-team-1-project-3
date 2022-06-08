@@ -165,28 +165,6 @@ const MyProducts = (props) => {
         </Box>
       <Grid item xs>
       <Grid container spacing={4} sx={{textAlign: 'left'}}>
-        <Grid item xs = {2.5}>
-        <Box>
-          <Card sx={{ maxWidth: 200}}>
-          <CardActionArea component={Link} to="/item" state={{ }} >
-              <CardMedia
-              component="img"
-              height="140"
-              alt="Cover Image"
-              image={"https://team1ecommerceapp.s3.amazonaws.com/pens.jpeg"}
-              />
-              <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                  Pens
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                  $5.99
-                  </Typography>
-              </CardContent>
-          </CardActionArea>
-          </Card>
-        </Box>
-        </Grid>
 
         {products.map((p) =>
         <Grid item xs = {2.5}>

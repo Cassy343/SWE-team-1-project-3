@@ -44,7 +44,7 @@ router.get('/', async (req, res, next) => {
         return;
     }
 
-    const firestoreID = db.userUidToDocId(uid);
+    const firestoreID = await db.userUidToDocId(uid);
 
     const q2 = query(
         collection(db.db, 'products'), where('seller', '==', doc(db.db, 'users/' + firestoreID))
