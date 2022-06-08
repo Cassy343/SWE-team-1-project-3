@@ -1,8 +1,11 @@
-import { Button, ButtonGroup, Stack, TextField, Typography } from "@mui/material";
+import './Login.css';
+import { Box, Button, ButtonGroup, Paper, Stack, TextField, Typography } from "@mui/material";
 import { useContext, useRef, useState } from "react";
 import { SessionContext } from "../Context";
 import axios from "axios";
 import { Navigate } from 'react-router-dom';
+import Hero from './ushop-login-hero.jpg';
+import Logo from '../ushop.png';
 
 const Login = (props) => {
     const session = useContext(SessionContext);
@@ -63,18 +66,26 @@ const Login = (props) => {
         });
     };
 
-    return (<>
-        <div
-            width='100vw'
+    return (<Box id='login-container'>
+        <Box
+            sx={{
+                backgroundImage: `url(${Hero})`,
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: 'cover',
+                position: 'relative'
+            }}
+            width='70vw'
             height='100vh'
-        >
+        />
+        <Box id='login-form-container'>
+            <Box id='logo-container'>
+                <img src={Logo} alt='logo' id='logo' />
+                <Typography variant='h4'>shop</Typography>
+            </Box>
             <Stack
                 sx={{
-                    width: '20vw',
-                    position: 'absolute',
-                    left: '50vw',
-                    top: '25vh',
-                    transform: 'translate(-50%, -50%)'
+                    width: '25vw'
                 }}
                 spacing={2}
             >
@@ -138,8 +149,8 @@ const Login = (props) => {
                     </Button>
                 </ButtonGroup>
             </Stack>
-        </div>
-    </>);
+        </Box>
+    </Box>);
 };
 
 export default Login;
