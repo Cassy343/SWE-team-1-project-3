@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db")
-const {getDocs, collection, doc, getDoc, query, where, addDoc, Timestamp } = require("firebase/firestore")
+const {getDocs, collection, doc, getDoc, query, where, addDoc, Timestamp, updateDoc } = require("firebase/firestore")
 const { validateReq } = require("../db")
 
 // gets all products
@@ -57,13 +57,16 @@ router.get('/', async (req, res, next) => {
 
 // posts new product
 router.post('/', async (req, res, next) => {
+    console.log(req.headers['access-token'])
     const uid = validateReq(req);
+    console.log(uid)
     if (!uid) {
         res.sendStatus(401);
         return;
     }
 
-    const firestoreID = db.userUidToDocId(uid);
+    const firestoreID = await db.userUidToDocId(uid);
+    console.log(firestoreID)
 
     const product = {
         name: req.body.name,
@@ -71,10 +74,29 @@ router.post('/', async (req, res, next) => {
         description: req.body.description,
         image: req.body.image,
         date_posted: Timestamp.fromDate(new Date()),
-        seller: doc(db.db, 'users/' + firestoreID)
+        seller: doc(db.db, 'users/' + firestoreID),
+        ratings: {}
     };
     const productDoc = await addDoc(collection(db.db, 'products'), product);
     res.send(productDoc)
+});
+
+router.put('/ratings', async (req, res) => {
+    const uid = validateReq(req);
+    if (!uid) {
+        res.sendStatus(401);
+        return;
+    }
+
+    const productDocRef = doc(db.db, 'products', req.query.id);
+
+    const dc = await getDoc(productDocRef);
+    const ratings = dc.data().ratings;
+    ratings[uid] = req.body;
+
+    await updateDoc(productDocRef, {
+        ratings: ratings
+    });
 });
 
 module.exports = router
