@@ -1,7 +1,7 @@
 .cart {
     display: flex;
-    flex-direction: row;
-    justify-content: center;
+    /* flex-direction: row;
+    justify-content: center; */
     padding: 10px;
 }
 
@@ -10,5 +10,5 @@
 }
 
 .receipt {
-    margin-left: 100px;
+    margin-left: 50px;
 }
