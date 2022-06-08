@@ -57,13 +57,16 @@ router.get('/', async (req, res, next) => {
 
 // posts new product
 router.post('/', async (req, res, next) => {
+    console.log(req.headers['access-token'])
     const uid = validateReq(req);
+    console.log(uid)
     if (!uid) {
         res.sendStatus(401);
         return;
     }
 
-    const firestoreID = db.userUidToDocId(uid);
+    const firestoreID = await db.userUidToDocId(uid);
+    console.log(firestoreID)
 
     const product = {
         name: req.body.name,
