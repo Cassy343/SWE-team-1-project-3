@@ -1,14 +1,20 @@
 import { Grid, Typography, Card, CardMedia, CardActionArea, CardContent, TextField, Button } from '@mui/material'
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useContext } from "react"
 import {Link} from "react-router-dom";
+import { SessionContext } from '../Context';
 
 const Products = (props) => {
     const [products, setProducts] = useState([]);
     const [input, setInput] = useState("");
+    const session = useContext(SessionContext);
 
     // GET products
     useEffect(() => {
-        fetch("products/all")
+        fetch("products/all", {
+            headers: {
+                'access-token': session.token
+            }
+        })
         .then((res) => res.json())
         .then((text) => {
             text.result.sort((a,b) => {

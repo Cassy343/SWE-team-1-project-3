@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
-const { login, createAccount } = require('../db');
+const { login, createAccount, logout } = require('../db');
 
-router.put('/login', (req, res) => {
+router.put('/', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
@@ -14,7 +14,7 @@ router.put('/login', (req, res) => {
     });
 });
 
-router.post('/login', (req, res) => {
+router.post('/', (req, res) => {
     const name = req.body.name;
     const email = req.body.email;
     const password = req.body.password;
@@ -25,6 +25,11 @@ router.post('/login', (req, res) => {
         res.status(403);
         res.send(error);
     });
+});
+
+router.delete('/', (req, res) => {
+    logout(req.headers['access-token']);
+    res.sendStatus(204);
 });
 
 module.exports = router;

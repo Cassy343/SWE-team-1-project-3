@@ -19,7 +19,7 @@ const Login = (props) => {
     }
 
     const tryCreateAccount = () => {
-        axios.post('auth/login', {
+        axios.post('auth', {
             name: nameRef.current.value,
             email: emailRef.current.value,
             password: passwordRef.current.value
@@ -43,7 +43,7 @@ const Login = (props) => {
     };
 
     const tryLogin = () => {
-        axios.put('auth/login', {
+        axios.put('auth', {
             email: emailRef.current.value,
             password: passwordRef.current.value
         }).then(res => {
