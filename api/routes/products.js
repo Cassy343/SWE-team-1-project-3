@@ -82,7 +82,8 @@ router.post('/', async (req, res, next) => {
         image: req.body.image,
         date_posted: Timestamp.fromDate(new Date()),
         seller: doc(db.db, 'users/' + firestoreID),
-        ratings: {}
+        ratings: {},
+        category: req.body.category
     };
     const productDoc = await addDoc(collection(db.db, 'products'), product);
     res.send(productDoc)
