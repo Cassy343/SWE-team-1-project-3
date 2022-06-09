@@ -15,6 +15,20 @@ const Login = (props) => {
     const emailRef = useRef();
     const passwordRef = useRef();
     const [error, setError] = useState(null);
+    const [inputErrors, setInputErrors] = useState({
+        name: false,
+        email: false,
+        password: false
+    });
+
+    const clearErrors = () => {
+        setError(null);
+        setInputErrors({
+            name: false,
+            email: false,
+            password: false
+        });
+    }
 
     if (session.token) {
         return (<>
@@ -23,6 +37,39 @@ const Login = (props) => {
     }
 
     const tryCreateAccount = () => {
+        let newError = null;
+        let newInputErrors = {
+            name: false,
+            email: false,
+            password: false
+        };
+
+        let proceed = true;
+
+        if (!nameRef.current.value) {
+            newError = (newError ? newError + '\n' : '') + "Please enter your name.";
+            newInputErrors.name = true;
+            proceed = false;
+        }
+
+        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(emailRef.current.value)) {
+            newError = (newError ? newError + '\n' : '') + "Please enter a valid email address.";
+            newInputErrors.email = true;
+            proceed = false;
+        }
+
+        if (passwordRef.current.value.length < 6) {
+            newError = (newError ? newError + '\n' : '') + "Password must be at least six characters.";
+            newInputErrors.password = true;
+            proceed = false;
+        }
+
+        if (!proceed) {
+            setError(newError);
+            setInputErrors(newInputErrors);
+            return;
+        }
+
         axios.post('auth', {
             name: nameRef.current.value,
             email: emailRef.current.value,
@@ -47,6 +94,8 @@ const Login = (props) => {
     };
 
     const tryLogin = () => {
+        clearErrors();
+
         axios.put('auth', {
             email: emailRef.current.value,
             password: passwordRef.current.value
@@ -98,12 +147,14 @@ const Login = (props) => {
                         variant='outlined'
                         label='Name'
                         inputRef={nameRef}
+                        error={inputErrors.name}
                         required
                     />}
                     <TextField
                         variant='outlined'
                         label='Email'
                         inputRef={emailRef}
+                        error={inputErrors.email}
                         required
                     />
                     <TextField
@@ -111,6 +162,7 @@ const Login = (props) => {
                         label='Password'
                         type='password'
                         inputRef={passwordRef}
+                        error={inputErrors.password}
                         required
                     />
                     {error && <Typography
@@ -129,7 +181,7 @@ const Login = (props) => {
                             onClick={() => {
                                 if (creatingAccount) {
                                     setCreatingAccount(false);
-                                    setError(null);
+                                    clearErrors();
                                 } else {
                                     tryLogin();
                                 }
@@ -146,7 +198,7 @@ const Login = (props) => {
                                     tryCreateAccount();
                                 } else {
                                     setCreatingAccount(true);
-                                    setError(null);
+                                    clearErrors();
                                 }
                             }}
                         >
