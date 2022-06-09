@@ -18,6 +18,7 @@ import Typography from '@mui/material/Typography';
 import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
 import Modal from '@mui/material/Modal';
+import { Select, InputLabel, MenuItem} from '@mui/material'
 //import AWS from 'aws-sdk';
 //import S3 from 'react-aws-s3'
 
@@ -42,12 +43,14 @@ const MyProducts = (props) => {
 
   const session = useContext(SessionContext);
   const url = "http://localhost:8000/products/";
+  const categories = ["Art", "Beauty", "Books", "Clothing", "Electronics", "Home", "Jewelry", "Office", "Other"];
   
 
   const [newProductName, setNewProductName] = useState("");
   const [newProductPrice, setNewProductPrice] = useState(0);
   const [newProductDescription, setNewProductDescription] = useState(0);
   const [newProductImage, setNewProductImage] = useState("");
+  const [newProductCategory, setNewProductCategory] = useState("");
   const [products, setProducts] = useState([]);
   const [change, setChange] = useState([0])
   const [selectedFile, setSelectedFile] = useState(null);
@@ -103,6 +106,7 @@ const sortByDate = (productA, productB) => {
           price: newProductPrice,
           description: newProductDescription,
           image: newProductImage,
+          category: newProductCategory,
         },
         {
         headers: {
@@ -172,6 +176,19 @@ const sortByDate = (productA, productB) => {
           onChange={(e) => setNewProductImage(e.target.value)}
           inputProps={{ defaultValue: null }}
           />
+          <br></br>
+
+          <FormControl variant="standard" sx={{width: '70%', m: 2}}>
+            <InputLabel id="cat-label">Category</InputLabel>
+            <Select
+            labelId="cat-label" 
+            label="Category" 
+            value={newProductCategory} 
+            sx={{textAlign: 'left'}}
+            onChange={(e) => setNewProductCategory(e.target.value)} > 
+                {categories.map(c => <MenuItem value={c}>{c}</MenuItem>)}
+            </Select>
+          </FormControl>
           <br></br><br></br>
           {/*IF AWS WORKS*/}
           {/*
@@ -205,7 +222,7 @@ const sortByDate = (productA, productB) => {
               <CardContent sx={{backgroundColor: '#f5f5f5'}}>
                 <Typography noWrap sx={{fontWeight: 'bold'}} variant="h6">{p.name}</Typography>
                 <Typography>${p.price}</Typography>
-                <Typography noWrap sx={{fontSize: 14}} color="text.secondary">{new Date(p.date_posted.seconds*1000).toDateString()}</Typography>
+                <Typography noWrap sx={{fontSize: 14}} color="text.secondary">Posted on {new Date(p.date_posted.seconds*1000).toDateString()}</Typography>
               </CardContent>
           </CardActionArea>
           </Card>

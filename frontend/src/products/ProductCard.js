@@ -1,12 +1,10 @@
-import { Typography, Card, CardMedia, CardActionArea, CardContent, useTheme } from '@mui/material'
+import { Typography, Card, CardMedia, CardActionArea, CardContent} from '@mui/material'
 import {Link} from "react-router-dom";
 
 const ProductCard = (props) => {
     const data = props.product.data;
     const id = props.product.id;
     const sellerName = props.product.sellerName;
-
-    const theme = useTheme();
 
     return (
     <>

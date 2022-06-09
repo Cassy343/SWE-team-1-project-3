@@ -1,4 +1,4 @@
-import { TextField, Button, Select, InputLabel, MenuItem } from '@mui/material'
+import { TextField, Button, Select, InputLabel, MenuItem, FormControl } from '@mui/material'
 import { useRef } from "react"
 
 const SearchBar = (props) => {
@@ -22,10 +22,12 @@ const SearchBar = (props) => {
 
     return(
     <div style={{ marginTop: '30px'}}>
-        <InputLabel id="cat-label">Category</InputLabel>
-        <Select labelId="cat-label" label="Category" size="small" value={category} onChange={onCategorySelect} sx={{width: '10%'}}> 
-            {categories.map(c => <MenuItem value={c}>{c}</MenuItem>)}
-        </Select>
+        <FormControl sx={{width: '10%'}}>
+            <InputLabel id="cat-label">Category</InputLabel>
+            <Select labelId="cat-label" label="Category" size="small" value={category} onChange={onCategorySelect}> 
+                {categories.map(c => <MenuItem value={c}>{c}</MenuItem>)}
+            </Select>
+        </FormControl>
 
 
         <TextField onChange={handleChange} variant="outlined" label="Search for an item..." size="small" sx={{width: '35%', marginLeft: 1}} inputRef={searchRef} id="search"/>

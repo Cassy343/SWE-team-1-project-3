@@ -1,5 +1,5 @@
 import { Grid } from '@mui/material'
-import { useState, useEffect, useRef, useContext } from "react"
+import { useState, useEffect, useContext } from "react"
 import { SessionContext } from '../Context';
 
 import SearchBar from './SearchBar';
@@ -37,8 +37,9 @@ const Products = (props) => {
         <Grid sx={{ marginTop: '1%'}} container spacing={3}>
             {products.map(product => {
                 if(product.data.name.toLowerCase().includes(input)) {
-                    if((category=="All") || (category!="All" && category==product.data.category))
+                    if((category==="All") || (category!=="All" && category===product.data.category))
                         return <Grid item xs={3}><ProductCard product={product}/></Grid>
+                    else return null;
                 }
                 else
                     return null;
