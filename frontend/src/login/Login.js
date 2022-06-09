@@ -6,6 +6,7 @@ import axios from "axios";
 import { Navigate } from 'react-router-dom';
 import Hero from './ushop-login-hero.jpg';
 import Logo from '../ushop.png';
+import Helmet from 'react-helmet';
 
 const Login = (props) => {
     const session = useContext(SessionContext);
@@ -14,6 +15,20 @@ const Login = (props) => {
     const emailRef = useRef();
     const passwordRef = useRef();
     const [error, setError] = useState(null);
+    const [inputErrors, setInputErrors] = useState({
+        name: false,
+        email: false,
+        password: false
+    });
+
+    const clearErrors = () => {
+        setError(null);
+        setInputErrors({
+            name: false,
+            email: false,
+            password: false
+        });
+    }
 
     if (session.token) {
         return (<>
@@ -22,6 +37,39 @@ const Login = (props) => {
     }
 
     const tryCreateAccount = () => {
+        let newError = null;
+        let newInputErrors = {
+            name: false,
+            email: false,
+            password: false
+        };
+
+        let proceed = true;
+
+        if (!nameRef.current.value) {
+            newError = (newError ? newError + '\n' : '') + "Please enter your name.";
+            newInputErrors.name = true;
+            proceed = false;
+        }
+
+        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(emailRef.current.value)) {
+            newError = (newError ? newError + '\n' : '') + "Please enter a valid email address.";
+            newInputErrors.email = true;
+            proceed = false;
+        }
+
+        if (passwordRef.current.value.length < 6) {
+            newError = (newError ? newError + '\n' : '') + "Password must be at least six characters.";
+            newInputErrors.password = true;
+            proceed = false;
+        }
+
+        if (!proceed) {
+            setError(newError);
+            setInputErrors(newInputErrors);
+            return;
+        }
+
         axios.post('auth', {
             name: nameRef.current.value,
             email: emailRef.current.value,
@@ -46,6 +94,8 @@ const Login = (props) => {
     };
 
     const tryLogin = () => {
+        clearErrors();
+
         axios.put('auth', {
             email: emailRef.current.value,
             password: passwordRef.current.value
@@ -66,91 +116,99 @@ const Login = (props) => {
         });
     };
 
-    return (<Box id='login-container'>
-        <Box
-            sx={{
-                backgroundImage: `url(${Hero})`,
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: 'cover',
-                position: 'relative'
-            }}
-            width='70vw'
-            height='100vh'
-        />
-        <Box id='login-form-container'>
-            <Box id='logo-container'>
-                <img src={Logo} alt='logo' id='logo' />
-                <Typography variant='h4'>shop</Typography>
-            </Box>
-            <Stack
+    return (<>
+        <Helmet><title>Ushop | Login</title></Helmet>
+        <Box id='login-container'>
+            <Box
                 sx={{
-                    width: '25vw'
+                    backgroundImage: `url(${Hero})`,
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: 'cover',
+                    position: 'relative'
                 }}
-                spacing={2}
-            >
-                {creatingAccount && <TextField
-                    variant='outlined'
-                    label='Name'
-                    inputRef={nameRef}
-                    required
-                />}
-                <TextField
-                    variant='outlined'
-                    label='Email'
-                    inputRef={emailRef}
-                    required
-                />
-                <TextField
-                    variant='outlined'
-                    label='Password'
-                    type='password'
-                    inputRef={passwordRef}
-                    required
-                />
-                {error && <Typography
-                    variant='body1'
-                    color='error'
+                width='70vw'
+                height='100vh'
+            />
+            <Box id='login-form-container'>
+                <Box id='logo-container'>
+                    <img src={Logo} alt='logo' id='logo' />
+                    <Typography variant='h4'>shop</Typography>                    
+                </Box>
+                <Typography>Where everyone can share!</Typography>
+                <Box height='1.5rem' />
+                <Stack
+                    sx={{
+                        width: '25vw'
+                    }}
+                    spacing={2}
                 >
-                    {error}
-                </Typography>}
-                <ButtonGroup
-                    variant='contained'
-                >
-                    <Button
-                        sx={{
-                            width: '50%'
-                        }}
-                        onClick={() => {
-                            if (creatingAccount) {
-                                setCreatingAccount(false);
-                                setError(null);
-                            } else {
-                                tryLogin();
-                            }
-                        }}
+                    {creatingAccount && <TextField
+                        variant='outlined'
+                        label='Name'
+                        inputRef={nameRef}
+                        error={inputErrors.name}
+                        required
+                    />}
+                    <TextField
+                        variant='outlined'
+                        label='Email'
+                        inputRef={emailRef}
+                        error={inputErrors.email}
+                        required
+                    />
+                    <TextField
+                        variant='outlined'
+                        label='Password'
+                        type='password'
+                        inputRef={passwordRef}
+                        error={inputErrors.password}
+                        required
+                    />
+                    {error && <Typography
+                        variant='body1'
+                        color='error'
                     >
-                        Login
-                    </Button>
-                    <Button
-                        sx={{
-                            width: '50%'
-                        }}
-                        onClick={() => {
-                            if (creatingAccount) {
-                                tryCreateAccount();
-                            } else {
-                                setCreatingAccount(true);
-                                setError(null);
-                            }
-                        }}
+                        {error}
+                    </Typography>}
+                    <ButtonGroup
+                        variant='contained'
                     >
-                        Create Account
-                    </Button>
-                </ButtonGroup>
-            </Stack>
+                        <Button
+                            sx={{
+                                width: '50%'
+                            }}
+                            onClick={() => {
+                                if (creatingAccount) {
+                                    setCreatingAccount(false);
+                                    clearErrors();
+                                } else {
+                                    tryLogin();
+                                }
+                            }}
+                        >
+                            Login
+                        </Button>
+                        <Button
+                            sx={{
+                                width: '50%'
+                            }}
+                            onClick={() => {
+                                if (creatingAccount) {
+                                    tryCreateAccount();
+                                } else {
+                                    setCreatingAccount(true);
+                                    clearErrors();
+                                }
+                            }}
+                        >
+                            Create Account
+                        </Button>
+                    </ButtonGroup>
+                </Stack>
+            </Box>
         </Box>
-    </Box>);
+    </>);
 };
 
 export default Login;

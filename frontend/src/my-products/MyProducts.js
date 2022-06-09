@@ -19,6 +19,7 @@ import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import { Select, InputLabel, MenuItem} from '@mui/material'
+import Helmet from 'react-helmet';
 //import AWS from 'aws-sdk';
 //import S3 from 'react-aws-s3'
 
@@ -132,7 +133,9 @@ const sortByDate = (productA, productB) => {
   }
   */
 
-  return (<div style={{  marginLeft: '70px', marginRight: '70px', marginBottom: '70px'}}>
+  return (<>
+  <Helmet><title>Ushop | My Products</title></Helmet>
+  <div style={{  marginLeft: '70px', marginRight: '70px', marginBottom: '70px'}}>
       <br></br>
       <br></br>
       <br></br>
@@ -231,7 +234,8 @@ const sortByDate = (productA, productB) => {
       </Grid>
       </Grid>
     </Grid>
-  </div>);
+  </div>
+  </>);
 };
 
 export default MyProducts;
