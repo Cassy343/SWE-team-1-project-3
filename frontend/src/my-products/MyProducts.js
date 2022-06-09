@@ -17,6 +17,8 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
+import Modal from '@mui/material/Modal';
+import { Select, InputLabel, MenuItem} from '@mui/material'
 //import AWS from 'aws-sdk';
 //import S3 from 'react-aws-s3'
 
@@ -41,12 +43,14 @@ const MyProducts = (props) => {
 
   const session = useContext(SessionContext);
   const url = "http://localhost:8000/products/";
+  const categories = ["Art", "Beauty", "Books", "Clothing", "Electronics", "Home", "Jewelry", "Office", "Other"];
   
 
   const [newProductName, setNewProductName] = useState("");
   const [newProductPrice, setNewProductPrice] = useState(0);
   const [newProductDescription, setNewProductDescription] = useState(0);
   const [newProductImage, setNewProductImage] = useState("");
+  const [newProductCategory, setNewProductCategory] = useState("");
   const [products, setProducts] = useState([]);
   const [change, setChange] = useState([0])
   const [selectedFile, setSelectedFile] = useState(null);
@@ -59,9 +63,31 @@ const MyProducts = (props) => {
       }
   })
     .then((res) => res.json())
-    .then((text) => setProducts(text.result))
+    .then((text) => {
+      const newProducts = text.result.map(p => { console.log(p.id);
+          return {
+              id: p.id,
+              sellerName: p.sellerName,
+              name: p.data.name,
+              image: p.data.image,
+              description: p.data.description,
+              price: p.data.price,
+              date_posted: p.data.date_posted,
+              ratings: p.data.ratings,
+              seller: p.data.seller
+          };
+      })
+      .sort(sortByDate);
+      setProducts(newProducts);
+  })
     .catch((err) => console.log(err))
 }, [change])
+
+const sortByDate = (productA, productB) => {
+  return productA.date_posted < productB.date_posted
+      ? -1
+      : (productA.date_posted > productB.date_posted ? 1 : 0);
+};
 
   const createProduct = async () => {
 
@@ -80,6 +106,7 @@ const MyProducts = (props) => {
           price: newProductPrice,
           description: newProductDescription,
           image: newProductImage,
+          category: newProductCategory,
         },
         {
         headers: {
@@ -105,13 +132,15 @@ const MyProducts = (props) => {
   }
   */
 
-  return (<div style={{ textAlign: 'center', marginLeft: '70px', marginRight: '70px', marginBottom: '70px'}}>
-      <h1>My Products</h1>
+  return (<div style={{  marginLeft: '70px', marginRight: '70px', marginBottom: '70px'}}>
       <br></br>
       <br></br>
-      <Grid container spacing={4} sx={{textAlign: 'left'}}>
-        <Box component="span" sx={{ p: 2, border: 2, px: 3.5 }}>
-          <Grid item xs>
+      <br></br>
+      <Grid sx={{ marginTop: '1%'}} container spacing={3}>
+      <Grid item xs ={3}>
+      <div style={{  textAlign: 'center',}}>
+      <Card variant="outlined" sx={{maxWidth: 300}}>
+        <CardContent>
           <p><b>Add a new product:</b></p>
           <TextField
           id="standard-basic" 
@@ -147,8 +176,20 @@ const MyProducts = (props) => {
           onChange={(e) => setNewProductImage(e.target.value)}
           inputProps={{ defaultValue: null }}
           />
-          <br></br><br></br>
+          <br></br>
 
+          <FormControl variant="standard" sx={{width: '70%', m: 2}}>
+            <InputLabel id="cat-label">Category</InputLabel>
+            <Select
+            labelId="cat-label" 
+            label="Category" 
+            value={newProductCategory} 
+            sx={{textAlign: 'left'}}
+            onChange={(e) => setNewProductCategory(e.target.value)} > 
+                {categories.map(c => <MenuItem value={c}>{c}</MenuItem>)}
+            </Select>
+          </FormControl>
+          <br></br><br></br>
           {/*IF AWS WORKS*/}
           {/*
           <label htmlFor="contained-button-file">
@@ -157,38 +198,34 @@ const MyProducts = (props) => {
           </label>
           {selectedFile ? <p style={{ fontSize: 12 }}>{selectedFile.name}</p>:<p style={{ fontSize: 12 }}> </p>}
           */}
-
-          <br></br>
+          
           <Button variant="contained" sx= {{  }} onClick={createProduct}>Post</Button>
-          <p></p>
-          </Grid>
-        </Box>
-      <Grid item xs>
-      <Grid container spacing={4} sx={{textAlign: 'left'}}>
-
+ 
+          </CardContent>
+        </Card>
+        </div>
+        </Grid>
+      <Grid item xs ={9}>
+      <Grid  container spacing={3}>
         {products.map((p) =>
-        <Grid item xs = {2.5}>
-        <Box>
-          <Card sx={{ maxWidth: 200}}>
+        <Grid item xs = {4}>
+        <Card variant="outlined" sx={{maxWidth: 300, maxHeight: 350}}>
           <CardActionArea component={Link} to="/item" state={{ id: p.id }} >
               <CardMedia
               component="img"
-              height="140"
-              alt="Cover Image"
+              height="240"
+              width="100%"
               image={p.image}
+              alt={p.name}
+              title={p.name} 
               />
-              <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                  {p.name}
-                  </Typography>
-                  {p.price &&
-                  <Typography variant="body2" color="text.secondary">
-                  ${p.price.toFixed(2)}
-                  </Typography>}
+              <CardContent sx={{backgroundColor: '#f5f5f5'}}>
+                <Typography noWrap sx={{fontWeight: 'bold'}} variant="h6">{p.name}</Typography>
+                <Typography>${p.price}</Typography>
+                <Typography noWrap sx={{fontSize: 14}} color="text.secondary">Posted on {new Date(p.date_posted.seconds*1000).toDateString()}</Typography>
               </CardContent>
           </CardActionArea>
           </Card>
-        </Box>
         </Grid>
       )}
       </Grid>

@@ -9,6 +9,25 @@ import MyProducts from './my-products/MyProducts';
 import { SessionContext } from './Context';
 import { useReducer } from 'react';
 import axios from 'axios';
+import {createTheme, ThemeProvider} from '@mui/material'
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            light: '#C3E8CA',
+            main: '#709C79',
+            dark: '#1D5929'
+        }
+    },
+    typography: {
+        fontFamily: 'Montserrat',
+        fontWeightLight: 300,
+        fontWeightRegular: 400,
+        fontWeightMedium: 500,
+        fontWeightBold: 600
+    }
+    
+})
 
 const sessionReducer = (session, action) => {
     switch (action.type) {
@@ -72,10 +91,15 @@ const sessionReducer = (session, action) => {
 
 const App = () => {
     const [session, dispatch] = useReducer(sessionReducer, {
-        cart: {}
+        cart: {},
+        token: window.localStorage.getItem('token'),
+        uid: window.localStorage.getItem('uid')
     });
 
     const initSession = (token, uid) => {
+        window.localStorage.setItem('token', token);
+        window.localStorage.setItem('uid', uid);
+
         dispatch({
             type: 'init',
             payload: {
@@ -90,6 +114,9 @@ const App = () => {
             return;
         }
 
+        window.localStorage.removeItem('token');
+        window.localStorage.removeItem('uid');
+
         axios.delete('auth', {
             headers: {
                 'access-token': session.token
@@ -99,11 +126,10 @@ const App = () => {
         dispatch({ type: 'logout', payload: null });
     };
 
-    window.addEventListener("beforeunload", _e => {  
-        logout();
-    });
 
-    return (<SessionContext.Provider value={session}>
+    return (
+    <ThemeProvider theme={theme}>
+    <SessionContext.Provider value={session}>
         <BrowserRouter className='App'>
             <Routes>
                 <Route
@@ -161,7 +187,9 @@ const App = () => {
                 </Route>
             </Routes>
         </BrowserRouter>
-    </SessionContext.Provider>);
+    </SessionContext.Provider>
+    </ThemeProvider>
+    );
 };
 
 export default App;
