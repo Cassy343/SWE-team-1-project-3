@@ -15,7 +15,7 @@ function Receipt(props) {
   const [totalPrice, setTotalPrice] = useState(0);
   const products = props.products;
   const TAX_RATE = 0.06;
-
+  
   useEffect(() => {
     getSubtotal(products);
     setTotalTaxes(TAX_RATE * subtotalPrice);
