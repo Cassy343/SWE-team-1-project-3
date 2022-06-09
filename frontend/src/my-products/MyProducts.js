@@ -222,7 +222,7 @@ const sortByDate = (productA, productB) => {
               <CardContent sx={{backgroundColor: '#f5f5f5'}}>
                 <Typography noWrap sx={{fontWeight: 'bold'}} variant="h6">{p.name}</Typography>
                 <Typography>${p.price}</Typography>
-                <Typography noWrap sx={{fontSize: 14}} color="text.secondary">Posted on {new Date(p.date_posted.seconds*1000).toDateString()}</Typography>
+                <Typography noWrap sx={{fontSize: 14}} color="text.secondary">Posted on {p.date_posted && new Date(p.date_posted.seconds*1000).toDateString()}</Typography>
               </CardContent>
           </CardActionArea>
           </Card>
