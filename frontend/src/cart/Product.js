@@ -5,6 +5,7 @@ import { SessionContext } from "../Context";
 import {Box, IconButton, Modal, Button} from '@mui/material'
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
+import {Link} from "react-router-dom";
 
 function Product(props) {
 
@@ -30,7 +31,7 @@ function Product(props) {
   return (<> 
     {session.cart[product.id] && 
     <Card sx={{ maxWidth: 345 }}>
-      <CardActionArea>
+      <CardActionArea component={Link} to="/item" state={{ id: product.id }}>
         <CardMedia
           component="img"
           height="240"
