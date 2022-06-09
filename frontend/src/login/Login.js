@@ -6,6 +6,7 @@ import axios from "axios";
 import { Navigate } from 'react-router-dom';
 import Hero from './ushop-login-hero.jpg';
 import Logo from '../ushop.png';
+import Helmet from 'react-helmet';
 
 const Login = (props) => {
     const session = useContext(SessionContext);
@@ -66,91 +67,96 @@ const Login = (props) => {
         });
     };
 
-    return (<Box id='login-container'>
-        <Box
-            sx={{
-                backgroundImage: `url(${Hero})`,
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: 'cover',
-                position: 'relative'
-            }}
-            width='70vw'
-            height='100vh'
-        />
-        <Box id='login-form-container'>
-            <Box id='logo-container'>
-                <img src={Logo} alt='logo' id='logo' />
-                <Typography variant='h4'>shop</Typography>
-            </Box>
-            <Stack
+    return (<>
+        <Helmet><title>Ushop | Login</title></Helmet>
+        <Box id='login-container'>
+            <Box
                 sx={{
-                    width: '25vw'
+                    backgroundImage: `url(${Hero})`,
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: 'cover',
+                    position: 'relative'
                 }}
-                spacing={2}
-            >
-                {creatingAccount && <TextField
-                    variant='outlined'
-                    label='Name'
-                    inputRef={nameRef}
-                    required
-                />}
-                <TextField
-                    variant='outlined'
-                    label='Email'
-                    inputRef={emailRef}
-                    required
-                />
-                <TextField
-                    variant='outlined'
-                    label='Password'
-                    type='password'
-                    inputRef={passwordRef}
-                    required
-                />
-                {error && <Typography
-                    variant='body1'
-                    color='error'
+                width='70vw'
+                height='100vh'
+            />
+            <Box id='login-form-container'>
+                <Box id='logo-container'>
+                    <img src={Logo} alt='logo' id='logo' />
+                    <Typography variant='h4'>shop</Typography>                    
+                </Box>
+                <Typography>Where everyone can share!</Typography>
+                <Box height='1.5rem' />
+                <Stack
+                    sx={{
+                        width: '25vw'
+                    }}
+                    spacing={2}
                 >
-                    {error}
-                </Typography>}
-                <ButtonGroup
-                    variant='contained'
-                >
-                    <Button
-                        sx={{
-                            width: '50%'
-                        }}
-                        onClick={() => {
-                            if (creatingAccount) {
-                                setCreatingAccount(false);
-                                setError(null);
-                            } else {
-                                tryLogin();
-                            }
-                        }}
+                    {creatingAccount && <TextField
+                        variant='outlined'
+                        label='Name'
+                        inputRef={nameRef}
+                        required
+                    />}
+                    <TextField
+                        variant='outlined'
+                        label='Email'
+                        inputRef={emailRef}
+                        required
+                    />
+                    <TextField
+                        variant='outlined'
+                        label='Password'
+                        type='password'
+                        inputRef={passwordRef}
+                        required
+                    />
+                    {error && <Typography
+                        variant='body1'
+                        color='error'
                     >
-                        Login
-                    </Button>
-                    <Button
-                        sx={{
-                            width: '50%'
-                        }}
-                        onClick={() => {
-                            if (creatingAccount) {
-                                tryCreateAccount();
-                            } else {
-                                setCreatingAccount(true);
-                                setError(null);
-                            }
-                        }}
+                        {error}
+                    </Typography>}
+                    <ButtonGroup
+                        variant='contained'
                     >
-                        Create Account
-                    </Button>
-                </ButtonGroup>
-            </Stack>
+                        <Button
+                            sx={{
+                                width: '50%'
+                            }}
+                            onClick={() => {
+                                if (creatingAccount) {
+                                    setCreatingAccount(false);
+                                    setError(null);
+                                } else {
+                                    tryLogin();
+                                }
+                            }}
+                        >
+                            Login
+                        </Button>
+                        <Button
+                            sx={{
+                                width: '50%'
+                            }}
+                            onClick={() => {
+                                if (creatingAccount) {
+                                    tryCreateAccount();
+                                } else {
+                                    setCreatingAccount(true);
+                                    setError(null);
+                                }
+                            }}
+                        >
+                            Create Account
+                        </Button>
+                    </ButtonGroup>
+                </Stack>
+            </Box>
         </Box>
-    </Box>);
+    </>);
 };
 
 export default Login;

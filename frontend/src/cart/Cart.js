@@ -4,6 +4,7 @@ import {Stack, Box, Typography} from '@mui/material'
 import './Cart.css';
 import { useEffect, useState, useContext, useReducer } from 'react';
 import { SessionContext } from '../Context'
+import Helmet from 'react-helmet';
 
 
 const Cart = (props) => {
@@ -22,6 +23,7 @@ const Cart = (props) => {
     }, [session.cart])
 
     return (<>
+        <Helmet><title>Ushop | Cart</title></Helmet>
         {!isCartEmpty ?
             <div className = "cart">
                 <div className = "products">

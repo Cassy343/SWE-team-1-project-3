@@ -1,7 +1,7 @@
 import { Grid } from '@mui/material'
 import { useState, useEffect, useContext } from "react"
 import { SessionContext } from '../Context';
-
+import Helmet from "react-helmet";
 import SearchBar from './SearchBar';
 import ProductCard from './ProductCard';
 
@@ -29,23 +29,24 @@ const Products = (props) => {
         .catch((err) => console.log(err))
     }, [])
 
-    return (
-    <div style={{ marginLeft: '70px', marginRight: '70px', marginBottom: '70px'}}>
-        <SearchBar setInput={setInput} category={category} setCategory={setCategory} categories={categories}/>
+    return (<>
+        <Helmet><title>Ushop | Products</title></Helmet>
+        <div style={{ marginLeft: '70px', marginRight: '70px', marginBottom: '70px'}}>
+            <SearchBar setInput={setInput} category={category} setCategory={setCategory} categories={categories}/>
 
-        <Grid sx={{ marginTop: '1%'}} container spacing={3}>
-            {products.map(product => {
-                if(product.data.name.toLowerCase().includes(input)) {
-                    if((category==="All") || (category!=="All" && category===product.data.category))
-                        return <Grid item xs={3}><ProductCard product={product}/></Grid>
-                    else return null;
-                }
-                else
-                    return null;
-            })}
-        </Grid>
-    </div>
-    );
+            <Grid sx={{ marginTop: '1%'}} container spacing={3}>
+                {products.map(product => {
+                    if(product.data.name.toLowerCase().includes(input)) {
+                        if((category==="All") || (category!=="All" && category===product.data.category))
+                            return <Grid item xs={3}><ProductCard product={product}/></Grid>
+                        else return null;
+                    }
+                    else
+                        return null;
+                })}
+            </Grid>
+        </div>
+    </>);
 };
 
 
