@@ -31,7 +31,9 @@ router.get("/info", async (req, res, next) => {
     }
 
     const id = req.query.id;
+    console.log(req.query.id)
     const d = await getDoc(doc(db.db, "products", id))
+    console.log(d.data())
     const seller = await getDoc(d.data().seller);
     res.json({ ...d.data(), id: d.id, sellerName: seller.data().name })
 })
@@ -51,7 +53,12 @@ router.get('/', async (req, res, next) => {
     );
     const d2 = await getDocs(q2).then(docs => docs.docs);
     const allDocs = [];
-    d2.forEach((doc) => {allDocs.push(doc.data())})
+    d2.forEach((doc) => {allDocs.push({id: doc.id, data: doc.data()})})
+    await Promise.all(allDocs.map(async (d) => {
+        const seller = await getDoc(d.data.seller)
+        d.sellerName = seller.data().name
+    }))
+
     res.json({result: allDocs})
 });
 
