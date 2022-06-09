@@ -10,8 +10,7 @@ const Products = (props) => {
     const [input, setInput] = useState("");
     const [category, setCategory] = useState("All");
     const session = useContext(SessionContext);
-
-    const categories = ["All", "Art", "Beauty", "Books", "Clothing", "Electronics", "Home", "Jewelry", "Office", "Other"];
+    const {categories} = props;
 
     // GET products
     useEffect(() => {

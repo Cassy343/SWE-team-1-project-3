@@ -25,6 +25,7 @@ const SearchBar = (props) => {
         <FormControl sx={{width: '10%'}}>
             <InputLabel id="cat-label">Category</InputLabel>
             <Select labelId="cat-label" label="Category" size="small" value={category} onChange={onCategorySelect}> 
+                <MenuItem value="All">All</MenuItem>
                 {categories.map(c => <MenuItem value={c}>{c}</MenuItem>)}
             </Select>
         </FormControl>
