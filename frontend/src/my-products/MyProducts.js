@@ -43,7 +43,7 @@ const MyProducts = (props) => {
 
   const session = useContext(SessionContext);
   const url = "http://localhost:8000/products/";
-  const categories = ["Art", "Beauty", "Books", "Clothing", "Electronics", "Home", "Jewelry", "Office", "Other"];
+  const {categories} = props;
   
 
   const [newProductName, setNewProductName] = useState("");
