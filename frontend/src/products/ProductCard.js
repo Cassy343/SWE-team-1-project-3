@@ -21,7 +21,7 @@ const ProductCard = (props) => {
                 title={data.name} 
             />
         
-            <CardContent sx={{backgroundColor: theme.palette.primary.light}}>
+            <CardContent sx={{backgroundColor: '#f5f5f5'}}>
                 <Typography noWrap sx={{fontWeight: 'bold'}} variant="h6">{data.name}</Typography>
                 <Typography>${data.price}</Typography>
                 <Typography noWrap sx={{fontSize: 14}} color="text.secondary">By {sellerName} on {new Date(data.date_posted.seconds*1000).toDateString()}</Typography>
