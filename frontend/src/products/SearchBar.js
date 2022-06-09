@@ -26,7 +26,7 @@ const SearchBar = (props) => {
             <InputLabel id="cat-label">Category</InputLabel>
             <Select labelId="cat-label" label="Category" size="small" value={category} onChange={onCategorySelect}> 
                 <MenuItem value="All">All</MenuItem>
-                {categories.map(c => <MenuItem value={c}>{c}</MenuItem>)}
+                {categories.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
             </Select>
         </FormControl>
 

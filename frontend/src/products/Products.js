@@ -38,7 +38,7 @@ const Products = (props) => {
                 {products.map(product => {
                     if(product.data.name.toLowerCase().includes(input)) {
                         if((category==="All") || (category!=="All" && category===product.data.category))
-                            return <Grid item xs={3}><ProductCard product={product}/></Grid>
+                            return <Grid item key={product.id} xs={3}><ProductCard product={product}/></Grid>
                         else return null;
                     }
                     else

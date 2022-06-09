@@ -31,6 +31,7 @@ const Cart = (props) => {
                         {productsInCart.map((product) => {
                             return(
                                 <Product
+                                    key={product.id}
                                     product = {product}
                                     addToCart={props.addToCart}
                                     removeOneFromCart={props.removeOneFromCart}

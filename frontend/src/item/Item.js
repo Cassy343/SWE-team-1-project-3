@@ -36,10 +36,7 @@ const Item = (props) => {
                 'access-token': session.token
             }
         })
-            .then(res => {
-                console.log(res);
-                setItem(res.data)
-            })
+            .then(res => setItem(res.data))
             .catch(e => console.error(e));
     }, []);
 
@@ -213,7 +210,6 @@ const Item = (props) => {
                             rating: rating
                         };
                         newRatings[session.uid] = review;
-                        console.log(newRatings);
                         setItem({
                             ...item,
                             ratings: newRatings

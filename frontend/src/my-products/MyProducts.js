@@ -73,7 +73,7 @@ const MyProducts = (props) => {
   })
     .then((res) => res.json())
     .then((text) => {
-      const newProducts = text.result.map(p => { console.log(p.id);
+      const newProducts = text.result.map(p => {
           return {
               id: p.id,
               sellerName: p.sellerName,
@@ -248,7 +248,7 @@ const sortByDate = (productA, productB) => {
             onChange={(e) => setNewProductCategory(e.target.value)}
             error={errors.category}
             > 
-                {categories.map(c => <MenuItem value={c}>{c}</MenuItem>)}
+                {categories.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
             </Select>
           </FormControl>
           <br></br><br></br>
@@ -280,7 +280,7 @@ const sortByDate = (productA, productB) => {
       <Grid item xs ={9}>
       <Grid  container spacing={3}>
         {products.map((p) =>
-        <Grid item xs = {4}>
+        <Grid item key={p.id} xs = {4}>
         <Card variant="outlined" sx={{maxWidth: 300, maxHeight: 350}}>
           <CardActionArea component={Link} to="/item" state={{ id: p.id }} >
               <CardMedia
