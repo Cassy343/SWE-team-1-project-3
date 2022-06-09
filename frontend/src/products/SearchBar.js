@@ -33,7 +33,7 @@ const SearchBar = (props) => {
 
         <TextField onChange={handleChange} variant="outlined" label="Search for an item..." size="small" sx={{width: '35%', marginLeft: 1}} inputRef={searchRef} id="search"/>
         {/* <Button variant="contained" sx={{marginLeft: 1}} onClick={submit}>Search</Button> */}
-        <Button variant="outlined" sx={{marginLeft: 1}} onClick={clear}>Clear</Button>
+        <Button variant="outlined" sx={{marginLeft: 1, height: '40px'}} onClick={clear}>Clear</Button>
     </div>
     )
 }
