@@ -64,7 +64,7 @@ const sessionReducer = (session, action) => {
                 ...cart[id],
                 qty: cart[id].qty - 1
             };
-
+            
             if (cart[id].qty <= 0) {
                 delete cart[id];
             }
@@ -164,7 +164,21 @@ const App = () => {
                     />
                     <Route
                         path='/cart'
-                        element={<Cart />}
+                        element={<Cart 
+                            addToCart={(id, item) => dispatch({
+                                type: 'add-to-cart',
+                                payload: {
+                                    id: id,
+                                    item: item
+                                }
+                            })}
+                            removeOneFromCart={id => dispatch({
+                                type: 'remove-one-from-cart',
+                                payload: {
+                                    id: id
+                                }
+                            })}
+                        />}
                     />
                     <Route
                         path='/my-products'
