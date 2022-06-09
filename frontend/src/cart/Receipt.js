@@ -1,5 +1,4 @@
 import React from 'react';
-import { List, ListItem, ListItemText, Divider } from '@mui/material'
 import {useState, useEffect} from 'react'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -24,7 +23,7 @@ function Receipt(props) {
 
   }, [subtotalPrice, products, totalPrice, totalTaxes])
 
-  const ccyFormat = (num) => `${num.toFixed(2)}`
+  const ccyFormat = (num) => `$ ${num.toFixed(2)}`
 
   const getSubtotal = (products) => {
     setSubtotalPrice(0);
@@ -61,6 +60,7 @@ function Receipt(props) {
               <TableCell align="right">{ccyFormat(product.price * product.qty)}</TableCell>
             </TableRow>
           ))}
+          <TableRow height = {25}/>
           <TableRow>
             <TableCell rowSpan={3} />
             <TableCell colSpan={2}>Subtotal</TableCell>
