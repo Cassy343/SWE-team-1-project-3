@@ -51,6 +51,7 @@ function Product(props) {
           display='flex'
           flexDirection='row'
           alignItems='center'
+          justifyContent="center"
         >
           <IconButton
             size='small'
@@ -64,7 +65,7 @@ function Product(props) {
           >
             <RemoveIcon />
           </IconButton>
-          <Typography>{session.cart[product.id].qty} in cart</Typography>
+          <Typography>{session.cart[product.id].qty}</Typography>
           <IconButton
             size='small'
             onClick={() => props.addToCart(product.id, product)}
