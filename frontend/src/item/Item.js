@@ -251,7 +251,6 @@ const UserReview = (props) => {
     const session = useContext(SessionContext);
     const {uid, values} = props;
     const [name, setName] = useState();
-    console.log(values.date)
 
     useEffect(() => {
         fetch("users?id=" + uid)
