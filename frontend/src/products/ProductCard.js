@@ -1,4 +1,4 @@
-import { Typography, Card, CardMedia, CardActionArea, CardContent, useTheme, Box} from '@mui/material'
+import { Typography, Card, CardMedia, CardActionArea, CardContent, Box} from '@mui/material'
 import {Link} from "react-router-dom";
 import StarRatings from "react-star-ratings/build/star-ratings";
 
@@ -6,7 +6,6 @@ const ProductCard = (props) => {
     const data = props.product.data;
     const id = props.product.id;
     const sellerName = props.product.sellerName;
-    // const theme = useTheme();
 
     const reviews = Object.values(data.ratings);
     const avgRating = reviews.length === 0
