@@ -2,6 +2,7 @@ import { Box, Paper, Stack } from '@mui/material';
 import { Link, Outlet } from 'react-router-dom';
 import './Nav.css';
 import { useState } from 'react';
+import Logo from './ushop.png';
 
 const NavButton = (props) => {
     return (
@@ -46,9 +47,12 @@ const Nav = (props) => {
                 <Stack
                     direction='row'
                     alignItems='center'
-                    justifyContent='left'
                     id='nav-stack'
+                    justifyContent='left'
                 >
+                    <Box >
+                        <img src={Logo} alt='logo' id='logo' width='50px'/>                 
+                    </Box>
                     {
                         links.map((link, index) => <Box
                             key={link.to}
@@ -64,6 +68,7 @@ const Nav = (props) => {
                             </Link>
                         </Box>)
                     }
+                    <Box sx={{flexGrow: 1}}></Box>
                     <Box
                         onClick={props.logout}
                     >

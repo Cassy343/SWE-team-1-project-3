@@ -5,7 +5,7 @@ import { SessionContext } from "../Context";
 import axios from "axios";
 import { Navigate } from 'react-router-dom';
 import Hero from './ushop-login-hero.jpg';
-import Logo from '../ushop.png';
+import Logo from '../ushoplogo.png';
 import Helmet from 'react-helmet';
 
 const Login = (props) => {
@@ -132,10 +132,9 @@ const Login = (props) => {
             />
             <Box id='login-form-container'>
                 <Box id='logo-container'>
-                    <img src={Logo} alt='logo' id='logo' />
-                    <Typography variant='h4'>shop</Typography>                    
+                    <img src={Logo} alt='logo' id='logo' />                 
                 </Box>
-                <Typography>Where everyone can share!</Typography>
+                <Typography>where everyone can share!</Typography>
                 <Box height='1.5rem' />
                 <Stack
                     sx={{
