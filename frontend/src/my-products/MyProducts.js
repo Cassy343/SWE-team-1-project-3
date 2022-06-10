@@ -2,6 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import {Link} from "react-router-dom";
 import axios from "axios";
 import { SessionContext } from '../Context'
+import MyCard from './MyCard.js'
 
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -220,27 +221,7 @@ const MyProducts = (props) => {
       </Grid>
       <Grid item xs ={9}>
         <Grid  container spacing={3}>
-          {products.map((p) =>
-            <Grid item key={p.id} xs = {4}>
-              <Card variant="outlined" sx={{maxWidth: 300, maxHeight: 350}}>
-                <CardActionArea component={Link} to="/item" state={{ id: p.id }} >
-                  <CardMedia
-                  component="img"
-                  height="240"
-                  width="100%"
-                  image={p.image}
-                  alt={p.name}
-                  title={p.name} 
-                  />
-                  <CardContent sx={{backgroundColor: '#f5f5f5'}}>
-                    <Typography noWrap sx={{fontWeight: 'bold'}} variant="h6">{p.name}</Typography>
-                    <Typography>${p.price}</Typography>
-                    <Typography noWrap sx={{fontSize: 14}} color="text.secondary">Posted on {p.date_posted && new Date(p.date_posted.seconds*1000).toDateString()}</Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-          )}
+          {products.map((p) => <Grid item key={p.id} xs = {4}><MyCard p={p}/></Grid>)}
         </Grid>
       </Grid>
     </Grid>
