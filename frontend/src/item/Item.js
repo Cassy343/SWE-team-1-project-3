@@ -1,12 +1,13 @@
-import { Box, Button, Card, IconButton, Modal, Typography } from "@mui/material";
+import { Box, Button, Card, IconButton, Modal, Typography, Stack, TextField } from "@mui/material";
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { SessionContext } from "../Context";
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import { useLocation } from "react-router";
 import './Item.css';
 import StarRatings from "react-star-ratings/build/star-ratings";
+const {Timestamp} = require("firebase/firestore")
 
 const modalStyle = {
     position: 'absolute',
@@ -28,6 +29,7 @@ const Item = (props) => {
     const [removingFromCart, setRemovingFromCart] = useState(false);
     const [reviewing, setReviewing] = useState(false);
     const [rating, setRating] = useState(0);
+    const textRef = useRef();
     
     useEffect(() => {
         axios.get(`products/info?id=${id}`, {
@@ -52,8 +54,15 @@ const Item = (props) => {
         : reviews
             .map(review => review.rating)
             .reduce((sum, x) => sum + x, 0) / reviews.length;
-
-    return (<Box
+    
+    const entries = Object.entries(item.ratings);
+    entries.sort((a,b) => {
+        return b[1].date.seconds - a[1].date.seconds
+    })
+    
+    return (
+    <>
+    <Box
         width='100vw'
         display='flex'
         flexDirection='row'
@@ -132,15 +141,17 @@ const Item = (props) => {
             <Box height='2rem' />
             {
                 item.ratings[session.uid]
-                ? <Box>
-                    <Typography>You rated this item:</Typography>
-                    <StarRatings
-                        rating={item.ratings[session.uid].rating}
-                        starDimension='35px'
-                        starSpacing='5px'
-                        starRatedColor='rgb(255,215,0)'
-                    />
-                </Box>
+                ? 
+                // <Box>
+                //     <Typography>You rated this item:</Typography>
+                //     <StarRatings
+                //         rating={item.ratings[session.uid].rating}
+                //         starDimension='35px'
+                //         starSpacing='5px'
+                //         starRatedColor='rgb(255,215,0)'
+                //     />
+                // </Box>
+                <Button disabled>Add Review</Button>
                 : <Button onClick={() => setReviewing(true)}>Add Review</Button>
             }
             <Box height='2rem' />
@@ -185,8 +196,8 @@ const Item = (props) => {
         >
             <Box sx={modalStyle}>
                 <Typography
-                    variant='h4'
-                >Rate this item out of 5:</Typography>
+                    variant='h5'
+                >Leave a Review:</Typography>
                 <Box height='1rem' />
                 <StarRatings
                     rating={rating}
@@ -197,9 +208,10 @@ const Item = (props) => {
                     starHoverColor='rgb(255,215,0)'
                 />
                 <Box height='1rem' />
+                <TextField multiline rows={4} fullWidth inputRef={textRef}/>
                 <Typography
                     color='text.secondary'
-                    sx={{ fontSize: '1.5em' }}
+                    sx={{ fontSize: '1em', mt: 1.5 }}
                 >Click outside the box to cancel.</Typography>
                 <Box height='1rem' />
                 <Button
@@ -207,7 +219,9 @@ const Item = (props) => {
                     onClick={() => {
                         const newRatings = { ...item.ratings };
                         const review = {
-                            rating: rating
+                            rating: rating,
+                            text_review: textRef.current.value,
+                            date: Timestamp.fromDate(new Date())
                         };
                         newRatings[session.uid] = review;
                         console.log(newRatings);
@@ -226,7 +240,49 @@ const Item = (props) => {
                 >Confirm</Button>
             </Box>
         </Modal>
-    </Box>);
+    </Box>
+
+    <Stack spacing={2} sx={{ml:18, mr:18, mb:10}}>
+        {entries.map(user => <UserReview uid={user[0]} values={user[1]}/>)}
+    </Stack>
+    </>
+    );
 };
+
+const UserReview = (props) => {
+    const session = useContext(SessionContext);
+    const {uid, values} = props;
+    const [name, setName] = useState();
+    console.log(values.date)
+
+    useEffect(() => {
+        fetch("users?id=" + uid)
+        .then((res) => res.json())
+        .then((text) => setName(text))
+    }, [])
+
+    return(
+    <>
+    <Card variant="outlined">
+        {session.uid===uid ? 
+            <Typography variant="h6" sx={{ml: 3, mt: 1.5}}>{name} (me)</Typography>
+        : <Typography variant="h6" sx={{ml: 3, mt: 1.5}}>{name}</Typography>
+        }
+            
+        <Box sx={{ml: 3, mt: 0.5}}>
+        <StarRatings
+            rating={values.rating}
+            starDimension='25px'
+            starSpacing='5px'
+            starRatedColor='rgb(255,215,0)'
+        />
+        </Box>
+
+        <Typography sx={{ml: 3, mt: 0.5}}>{values.text_review}</Typography>
+        <Typography sx={{fontSize: 14, mt: 0.5, ml: 3, mb: 1.8}} color="text.secondary">Reviewed on {new Date(values.date.seconds*1000).toDateString()}</Typography>
+    </Card>
+    </>
+    )
+}
 
 export default Item;

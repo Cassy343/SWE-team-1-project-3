@@ -1,4 +1,5 @@
-import { TextField, Button, Select, InputLabel, MenuItem, FormControl } from '@mui/material'
+import { TextField, Button, Select, InputLabel, MenuItem, FormControl, IconButton } from '@mui/material'
+import { SearchOutlined} from '@mui/icons-material'
 import { useRef } from "react"
 
 const SearchBar = (props) => {
@@ -22,7 +23,7 @@ const SearchBar = (props) => {
 
     return(
     <div style={{ marginTop: '30px'}}>
-        <FormControl sx={{width: '10%'}}>
+        <FormControl sx={{width: '12%'}}>
             <InputLabel id="cat-label">Category</InputLabel>
             <Select labelId="cat-label" label="Category" size="small" value={category} onChange={onCategorySelect}> 
                 <MenuItem value="All">All</MenuItem>
@@ -31,7 +32,9 @@ const SearchBar = (props) => {
         </FormControl>
 
 
-        <TextField onChange={handleChange} variant="outlined" label="Search for an item..." size="small" sx={{width: '35%', marginLeft: 1}} inputRef={searchRef} id="search"/>
+        <TextField onChange={handleChange} variant="outlined" label="Search for an item..." size="small" 
+            sx={{width: '35%', marginLeft: 1}} inputRef={searchRef} id="search"
+            InputProps={{endAdornment: (<IconButton onClick={e => e.preventDefault()}><SearchOutlined/></IconButton>)}} />
         {/* <Button variant="contained" sx={{marginLeft: 1}} onClick={submit}>Search</Button> */}
         <Button variant="outlined" sx={{marginLeft: 1}} onClick={clear}>Clear</Button>
     </div>

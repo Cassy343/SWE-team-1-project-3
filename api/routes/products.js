@@ -100,6 +100,9 @@ router.put('/ratings', async (req, res) => {
 
     const dc = await getDoc(productDocRef);
     const ratings = dc.data().ratings;
+    
+    let newRating = req.body;
+    newRating.date = Timestamp.fromDate(new Date());
     ratings[uid] = req.body;
 
     await updateDoc(productDocRef, {
