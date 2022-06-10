@@ -85,6 +85,8 @@ const sessionReducer = (session, action) => {
             
             return { ...session, cart: cart };
         }
+        case 'clear-cart':
+            return { ...session, cart: {} };
         case 'logout':
             return { ...session, token: null, uid: null };
         default:
@@ -190,7 +192,7 @@ const App = () => {
                     />
                     <Route
                         path='/checkout'
-                        element={<Checkout />}
+                        element={<Checkout clearCart={() => dispatch({ type: 'clear-cart', payload: null })} />}
                     />
                     <Route
                         path='/success'
