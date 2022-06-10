@@ -9,6 +9,7 @@ import SubmitButton from "./SubmitButton";
 import CheckoutError from "./CheckoutError";
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import { Box } from "@mui/material";
 
 const CardElementContainer = styled.div`
   height: 40px;
@@ -21,7 +22,7 @@ const CardElementContainer = styled.div`
   }
 `;
 
-const CheckoutForm = ({ price, onSuccessfulCheckout }) => {
+const CheckoutForm = ({ price, onSuccessfulCheckout, clearCart }) => {
   const [isProcessing, setProcessingTo] = useState(false);
   const [checkoutError, setCheckoutError] = useState();
 
@@ -128,9 +129,11 @@ const cardElementOpts = {
             </Row>
             {checkoutError && <CheckoutError>{checkoutError}</CheckoutError>}
             <Row>
-              <SubmitButton disabled={isProcessing || !stripe}><Typography><b>
-                {isProcessing ? "Processing..." : `Pay $${price}`}</b></Typography>
-              </SubmitButton>
+              <Box onClick={clearCart}>
+                <SubmitButton disabled={isProcessing || !stripe}><Typography><b>
+                  {isProcessing ? "Processing..." : `Pay $${price}`}</b></Typography>
+                </SubmitButton>
+              </Box>
             </Row>
           </form>
         </Grid>
