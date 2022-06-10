@@ -1,5 +1,4 @@
 
-import styled from "@emotion/styled";
 import GlobalStyles from "./GlobalStyles";
 
 import { Elements } from "@stripe/react-stripe-js";
