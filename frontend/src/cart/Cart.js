@@ -4,8 +4,9 @@ import {Stack, Box, Typography} from '@mui/material'
 import './Cart.css';
 import { useEffect, useState, useContext, useReducer } from 'react';
 import { SessionContext } from '../Context'
+import Button from '@mui/material/Button';
+import {Link} from "react-router-dom";
 import Helmet from 'react-helmet';
-
 
 const Cart = (props) => {
     
@@ -13,6 +14,7 @@ const Cart = (props) => {
 
     const [productsInCart, setProductsInCart] = useState([session.cart]);
     const [isCartEmpty, setIsCartEmpty] = useState(true);
+    const [price, setPrice] = useState(0)
     
     useEffect(() => {
 
@@ -40,8 +42,11 @@ const Cart = (props) => {
                         })}
                     </Stack>
                 </div>
-                <div className="receipt">
-                    <Receipt products={productsInCart} />
+                <div className = "receipt">
+                    <Receipt products = {productsInCart} setPrice = {setPrice}/>
+                    <br></br>
+                    <div align='right'>
+                        <Button variant='contained' component={Link} to="/checkout" state={{ price: price }}>Proceed to Checkout</Button></div>
                 </div>
             </div>
             :

@@ -6,6 +6,8 @@ import Products from './products/Products';
 import Item from './item/Item';
 import Cart from './cart/Cart';
 import MyProducts from './my-products/MyProducts';
+import Checkout from './checkout/Checkout';
+import Success from './checkout/success'
 import { SessionContext } from './Context';
 import { useReducer } from 'react';
 import axios from 'axios';
@@ -186,7 +188,16 @@ const App = () => {
                         path='/my-products'
                         element={<MyProducts categories={categories}/>}
                     />
+                    <Route
+                        path='/checkout'
+                        element={<Checkout />}
+                    />
+                    <Route
+                        path='/success'
+                        element={<Success />}
+                    />
                 </Route>
+                
             </Routes>
         </BrowserRouter>
     </SessionContext.Provider>
