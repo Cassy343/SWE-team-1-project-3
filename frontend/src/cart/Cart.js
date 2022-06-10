@@ -51,7 +51,7 @@ const Cart = (props) => {
             </div>
             :
             <div className="empty-cart">
-                <Receipt products={[]} />
+                <Receipt products={[]} setPrice = {setPrice}/>
                 <Box sx={{width: '100%', maxwidth: 500, mt: 2}}>
                     <Typography variant="h5" align="center" gutterBottom>
                         The Cart is empty
