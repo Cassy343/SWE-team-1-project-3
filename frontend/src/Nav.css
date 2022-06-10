@@ -3,16 +3,22 @@
     align-items: 'right'
 }
 
-#logo {
-    width: 1vw;
+#nav-logo {
+    width: 55px;
 }
 
-#logo-container {
+#nav-logo-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: end;
-    margin-bottom: 0.5rem;
+    margin-top: 0.3rem;
+    margin-bottom: 0.3rem;
+    margin-right: 0.5rem;
+}
+
+#nav-logo-container:hover {
+    cursor: pointer;
 }
 
 #nav-stack {

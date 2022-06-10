@@ -50,8 +50,15 @@ const Nav = (props) => {
                     id='nav-stack'
                     justifyContent='left'
                 >
-                    <Box >
-                        <img src={Logo} alt='logo' id='logo' width='50px'/>                 
+                    <Box onClick={() => setSelectedLink(0)}>
+                        <Link
+                            to='/products'
+                            className='nav-link'
+                        >
+                            <Box id='nav-logo-container'>
+                                <img src={Logo} alt='logo' id='nav-logo' width='50px'/>                 
+                            </Box>
+                        </Link>
                     </Box>
                     {
                         links.map((link, index) => <Box
@@ -71,6 +78,7 @@ const Nav = (props) => {
                     <Box sx={{flexGrow: 1}}></Box>
                     <Box
                         onClick={props.logout}
+                        sx={{ marginRight: '1rem' }}
                     >
                         <Link
                             to='/'
