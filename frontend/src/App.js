@@ -13,6 +13,8 @@ import { useReducer } from 'react';
 import axios from 'axios';
 import {createTheme, ThemeProvider} from '@mui/material'
 
+const categories = ["Art", "Beauty", "Books", "Clothing", "Electronics", "Home", "Jewelry", "Office", "Other"];
+
 const theme = createTheme({
     palette: {
         primary: {
@@ -144,7 +146,7 @@ const App = () => {
                 >
                     <Route
                         path='/products'
-                        element={<Products />}
+                        element={<Products categories={categories}/>}
                     />
                     <Route
                         path='/item'
@@ -184,7 +186,7 @@ const App = () => {
                     />
                     <Route
                         path='/my-products'
-                        element={<MyProducts />}
+                        element={<MyProducts categories={categories}/>}
                     />
                     <Route
                         path='/checkout'

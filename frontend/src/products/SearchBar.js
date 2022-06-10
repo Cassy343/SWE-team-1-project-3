@@ -25,14 +25,15 @@ const SearchBar = (props) => {
         <FormControl sx={{width: '10%'}}>
             <InputLabel id="cat-label">Category</InputLabel>
             <Select labelId="cat-label" label="Category" size="small" value={category} onChange={onCategorySelect}> 
-                {categories.map(c => <MenuItem value={c}>{c}</MenuItem>)}
+                <MenuItem value="All">All</MenuItem>
+                {categories.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
             </Select>
         </FormControl>
 
 
         <TextField onChange={handleChange} variant="outlined" label="Search for an item..." size="small" sx={{width: '35%', marginLeft: 1}} inputRef={searchRef} id="search"/>
         {/* <Button variant="contained" sx={{marginLeft: 1}} onClick={submit}>Search</Button> */}
-        <Button variant="outlined" sx={{marginLeft: 1}} onClick={clear}>Clear</Button>
+        <Button variant="outlined" sx={{marginLeft: 1, height: '40px'}} onClick={clear}>Clear</Button>
     </div>
     )
 }

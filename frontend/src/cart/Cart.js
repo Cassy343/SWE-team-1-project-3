@@ -6,6 +6,7 @@ import { useEffect, useState, useContext, useReducer } from 'react';
 import { SessionContext } from '../Context'
 import Button from '@mui/material/Button';
 import {Link} from "react-router-dom";
+import Helmet from 'react-helmet';
 
 const Cart = (props) => {
     
@@ -24,13 +25,15 @@ const Cart = (props) => {
     }, [session.cart])
 
     return (<>
+        <Helmet><title>Ushop | Cart</title></Helmet>
         {!isCartEmpty ?
-            <div className = "cart">
-                <div className = "products">
+            <div className="cart">
+                <div className="products">
                     <Stack spacing = {2}>
                         {productsInCart.map((product) => {
                             return(
                                 <Product
+                                    key={product.id}
                                     product = {product}
                                     addToCart={props.addToCart}
                                     removeOneFromCart={props.removeOneFromCart}
@@ -48,14 +51,16 @@ const Cart = (props) => {
             </div>
             :
             <div className="empty-cart">
-                <Box sx={{width: '100%', maxwidth: 500}}>
-                    <Typography variant="h1" align="center" gutterBottom>
+                <Receipt products={[]} />
+                <Box sx={{width: '100%', maxwidth: 500, mt: 2}}>
+                    <Typography variant="h5" align="center" gutterBottom>
                         The Cart is empty
                     </Typography>
-                    <Typography variant="h3" align="center">
+                    <Typography variant="h6" align="center">
                         Try adding an item from the "View Products" page!
                     </Typography>
                 </Box>
+                
             </div>}
     </>);
 

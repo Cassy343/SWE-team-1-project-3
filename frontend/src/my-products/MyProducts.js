@@ -19,6 +19,7 @@ import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import { Select, InputLabel, MenuItem} from '@mui/material'
+import Helmet from 'react-helmet';
 //import AWS from 'aws-sdk';
 //import S3 from 'react-aws-s3'
 
@@ -43,18 +44,26 @@ const MyProducts = (props) => {
 
   const session = useContext(SessionContext);
   const url = "http://localhost:8000/products/";
-  const categories = ["Art", "Beauty", "Books", "Clothing", "Electronics", "Home", "Jewelry", "Office", "Other"];
+  const {categories} = props;
   
 
-  const [newProductName, setNewProductName] = useState("");
-  const [newProductPrice, setNewProductPrice] = useState(0);
-  const [newProductDescription, setNewProductDescription] = useState(0);
-  const [newProductImage, setNewProductImage] = useState("");
-  const [newProductCategory, setNewProductCategory] = useState("");
+  const [newProductName, setNewProductName] = useState(null);
+  const [newProductPrice, setNewProductPrice] = useState(null);
+  const [newProductDescription, setNewProductDescription] = useState(null);
+  const [newProductImage, setNewProductImage] = useState(null);
+  const [newProductCategory, setNewProductCategory] = useState(null);
   const [products, setProducts] = useState([]);
   const [change, setChange] = useState([0])
   const [selectedFile, setSelectedFile] = useState(null);
   const [progress , setProgress] = useState(0);
+  const [errors, setErrors] = useState({
+    name: false,
+    price: false,
+    desc: false,
+    img: false,
+    category: false
+  });
+  const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
     fetch("products", {
@@ -64,7 +73,7 @@ const MyProducts = (props) => {
   })
     .then((res) => res.json())
     .then((text) => {
-      const newProducts = text.result.map(p => { console.log(p.id);
+      const newProducts = text.result.map(p => {
           return {
               id: p.id,
               sellerName: p.sellerName,
@@ -90,6 +99,42 @@ const sortByDate = (productA, productB) => {
 };
 
   const createProduct = async () => {
+    let newErrors = {
+      name: false,
+      price: false,
+      desc: false,
+      img: false,
+      category: false
+    };
+
+    if (!newProductName) {
+      newErrors.name = true;
+    }
+
+    if (!newProductPrice) {
+      newErrors.price = true;
+    }
+
+    if (!newProductDescription) {
+      newErrors.desc = true;
+    }
+
+    if (!newProductImage) {
+      newErrors.img = true;
+    }
+
+    if (!newProductCategory) {
+      newErrors.category = true;
+    }
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).filter(x => x).length > 0) {
+      setErrorMsg("One or more fields still need to be filled in.")
+      return;
+    } else {
+      setErrorMsg(null);
+    }
 
     /* IF AWS WORKS
     const ReactS3Client = new S3(config)
@@ -115,6 +160,12 @@ const sortByDate = (productA, productB) => {
         })
       setProducts([...products, res.data]);
       setChange(change + 1);
+
+      setNewProductName(null);
+      setNewProductPrice(null);
+      setNewProductDescription(null);
+      setNewProductImage(null);
+      setNewProductCategory(null);
     //}
   }
 
@@ -132,61 +183,72 @@ const sortByDate = (productA, productB) => {
   }
   */
 
-  return (<div style={{  marginLeft: '70px', marginRight: '70px', marginBottom: '70px'}}>
+  return (<>
+  <Helmet><title>Ushop | My Products</title></Helmet>
+  <div style={{  marginLeft: '70px', marginRight: '70px', marginBottom: '70px'}}>
       <br></br>
       <br></br>
       <br></br>
       <Grid sx={{ marginTop: '1%'}} container spacing={3}>
       <Grid item xs ={3}>
       <div style={{  textAlign: 'center',}}>
-      <Card variant="outlined" sx={{maxWidth: 300}}>
+      <Card variant="outlined" sx={{width: '300px'}}>
         <CardContent>
           <p><b>Add a new product:</b></p>
           <TextField
+          sx={{ width: '83%' }}
           id="standard-basic" 
           variant="standard"
           helperText = "Product Name"
           onChange={(e) => setNewProductName(e.target.value)}
           inputProps={{ defaultValue: null }}
+          error={errors.name}
           />
           <br></br>
-          <FormControl variant="standard">
+          <FormControl variant="standard" sx={{ width: '83%' }}>
             <FileInput
               id="standard-adornment-amount"
               helperText = "Product Price ($)"
               onChange={(e) => setNewProductPrice(Number(e.target.value))}
               startAdornment={<InputAdornment position="start">$</InputAdornment>}
+              error={errors.price}
             />
             <FormHelperText id="price-helper-text">Price</FormHelperText>
           </FormControl>
           <br></br>
           <TextField multiline
+          sx={{ width: '83%' }}
           id="standard-basic" 
           variant="standard"
           helperText = "Product Description"
           onChange={(e) => setNewProductDescription(e.target.value)}
           inputProps={{ defaultValue: null }}
+          error={errors.desc}
           />
           <br></br>
           {/*ALTERNATIVE TO AWS*/}
           <TextField multiline
+          sx={{ width: '83%' }}
           id="standard-basic" 
           variant="standard"
           helperText = "Product Image Link"
           onChange={(e) => setNewProductImage(e.target.value)}
           inputProps={{ defaultValue: null }}
+          error={errors.img}
           />
           <br></br>
 
-          <FormControl variant="standard" sx={{width: '70%', m: 2}}>
+          <FormControl variant="standard" sx={{width: '83%', m: 2}}>
             <InputLabel id="cat-label">Category</InputLabel>
             <Select
             labelId="cat-label" 
             label="Category" 
             value={newProductCategory} 
             sx={{textAlign: 'left'}}
-            onChange={(e) => setNewProductCategory(e.target.value)} > 
-                {categories.map(c => <MenuItem value={c}>{c}</MenuItem>)}
+            onChange={(e) => setNewProductCategory(e.target.value)}
+            error={errors.category}
+            > 
+                {categories.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
             </Select>
           </FormControl>
           <br></br><br></br>
@@ -198,6 +260,16 @@ const sortByDate = (productA, productB) => {
           </label>
           {selectedFile ? <p style={{ fontSize: 12 }}>{selectedFile.name}</p>:<p style={{ fontSize: 12 }}> </p>}
           */}
+
+          {
+            errorMsg && <>
+              <Typography
+                color="error"
+                sx={{ fontSize: '1rem' }}
+              >{errorMsg}</Typography>
+              <br></br>
+            </>
+          }
           
           <Button variant="contained" sx= {{  }} onClick={createProduct}>Post</Button>
  
@@ -208,7 +280,7 @@ const sortByDate = (productA, productB) => {
       <Grid item xs ={9}>
       <Grid  container spacing={3}>
         {products.map((p) =>
-        <Grid item xs = {4}>
+        <Grid item key={p.id} xs = {4}>
         <Card variant="outlined" sx={{maxWidth: 300, maxHeight: 350}}>
           <CardActionArea component={Link} to="/item" state={{ id: p.id }} >
               <CardMedia
@@ -231,7 +303,8 @@ const sortByDate = (productA, productB) => {
       </Grid>
       </Grid>
     </Grid>
-  </div>);
+  </div>
+  </>);
 };
 
 export default MyProducts;

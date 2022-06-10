@@ -7,6 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useLocation } from "react-router";
 import './Item.css';
 import StarRatings from "react-star-ratings/build/star-ratings";
+import Helmet from "react-helmet";
 
 const modalStyle = {
     position: 'absolute',
@@ -35,10 +36,7 @@ const Item = (props) => {
                 'access-token': session.token
             }
         })
-            .then(res => {
-                console.log(res);
-                setItem(res.data)
-            })
+            .then(res => setItem(res.data))
             .catch(e => console.error(e));
     }, []);
 
@@ -53,7 +51,9 @@ const Item = (props) => {
             .map(review => review.rating)
             .reduce((sum, x) => sum + x, 0) / reviews.length;
 
-    return (<Box
+    return (<>
+    <Helmet><title>Ushop | {item.name}</title></Helmet>
+    <Box
         width='100vw'
         display='flex'
         flexDirection='row'
@@ -210,7 +210,6 @@ const Item = (props) => {
                             rating: rating
                         };
                         newRatings[session.uid] = review;
-                        console.log(newRatings);
                         setItem({
                             ...item,
                             ratings: newRatings
@@ -226,7 +225,8 @@ const Item = (props) => {
                 >Confirm</Button>
             </Box>
         </Modal>
-    </Box>);
+    </Box>
+    </>);
 };
 
 export default Item;
