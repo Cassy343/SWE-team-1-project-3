@@ -1,5 +1,18 @@
 #nav-bar {
     border-radius: 0;
+    align-items: 'right'
+}
+
+#logo {
+    width: 1vw;
+}
+
+#logo-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: end;
+    margin-bottom: 0.5rem;
 }
 
 #nav-stack {
