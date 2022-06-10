@@ -31,9 +31,7 @@ router.get("/info", async (req, res, next) => {
     }
 
     const id = req.query.id;
-    console.log(req.query.id)
     const d = await getDoc(doc(db.db, "products", id))
-    console.log(d.data())
     const seller = await getDoc(d.data().seller);
     res.json({ ...d.data(), id: d.id, sellerName: seller.data().name })
 })
@@ -64,20 +62,17 @@ router.get('/', async (req, res, next) => {
 
 // posts new product
 router.post('/', async (req, res, next) => {
-    console.log(req.headers['access-token'])
     const uid = validateReq(req);
-    console.log(uid)
     if (!uid) {
         res.sendStatus(401);
         return;
     }
 
     const firestoreID = await db.userUidToDocId(uid);
-    console.log(firestoreID)
 
     const product = {
         name: req.body.name,
-        price: Number(req.body.price),
+        price: Number(req.body.price).toFixed(2),
         description: req.body.description,
         image: req.body.image,
         date_posted: Timestamp.fromDate(new Date()),

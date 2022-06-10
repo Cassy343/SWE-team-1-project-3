@@ -27,7 +27,7 @@ const SearchBar = (props) => {
             <InputLabel id="cat-label">Category</InputLabel>
             <Select labelId="cat-label" label="Category" size="small" value={category} onChange={onCategorySelect}> 
                 <MenuItem value="All">All</MenuItem>
-                {categories.map(c => <MenuItem value={c}>{c}</MenuItem>)}
+                {categories.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
             </Select>
         </FormControl>
 
@@ -36,7 +36,7 @@ const SearchBar = (props) => {
             sx={{width: '35%', marginLeft: 1}} inputRef={searchRef} id="search"
             InputProps={{endAdornment: (<IconButton onClick={e => e.preventDefault()}><SearchOutlined/></IconButton>)}} />
         {/* <Button variant="contained" sx={{marginLeft: 1}} onClick={submit}>Search</Button> */}
-        <Button variant="outlined" sx={{marginLeft: 1}} onClick={clear}>Clear</Button>
+        <Button variant="outlined" sx={{marginLeft: 1, height: '40px'}} onClick={clear}>Clear</Button>
     </div>
     )
 }

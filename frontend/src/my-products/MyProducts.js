@@ -6,55 +6,42 @@ import { SessionContext } from '../Context'
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import FileInput from '@mui/material/Input';
-import { styled } from '@mui/material/styles';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
-import Modal from '@mui/material/Modal';
 import { Select, InputLabel, MenuItem} from '@mui/material'
-//import AWS from 'aws-sdk';
-//import S3 from 'react-aws-s3'
-
-
-const Input = styled('input')({
-  display: 'none',
-});
-
-const s3bucket = process.env.s3bucket;
-const region = process.env.region;
-const accessKey = process.env.accessKey;
-const secretAccessKey = process.env.secretAccessKey;
-
-const config = {
-  bucketName: s3bucket,
-  region: region,
-  accessKeyId: accessKey,
-  secretAccessKey: secretAccessKey,
-}
+import Helmet from 'react-helmet';
 
 const MyProducts = (props) => {
 
   const session = useContext(SessionContext);
-  const url = "http://localhost:8000/products/";
   const {categories} = props;
-  
+  const textInput1 = React.useRef(null);
+  const textInput2 = React.useRef(null);
+  const textInput3 = React.useRef(null);
+  const textInput4 = React.useRef(null);
 
-  const [newProductName, setNewProductName] = useState("");
-  const [newProductPrice, setNewProductPrice] = useState(0);
-  const [newProductDescription, setNewProductDescription] = useState(0);
-  const [newProductImage, setNewProductImage] = useState("");
-  const [newProductCategory, setNewProductCategory] = useState("");
+  const [newProductName, setNewProductName] = useState(null);
+  const [newProductPrice, setNewProductPrice] = useState(null);
+  const [newProductDescription, setNewProductDescription] = useState(null);
+  const [newProductImage, setNewProductImage] = useState(null);
+  const [newProductCategory, setNewProductCategory] = useState(null);
   const [products, setProducts] = useState([]);
   const [change, setChange] = useState([0])
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [progress , setProgress] = useState(0);
+  const [errors, setErrors] = useState({
+    name: false,
+    price: false,
+    desc: false,
+    img: false,
+    category: false
+  });
+  const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
     fetch("products", {
@@ -64,7 +51,7 @@ const MyProducts = (props) => {
   })
     .then((res) => res.json())
     .then((text) => {
-      const newProducts = text.result.map(p => { console.log(p.id);
+      const newProducts = text.result.map(p => {
           return {
               id: p.id,
               sellerName: p.sellerName,
@@ -77,28 +64,49 @@ const MyProducts = (props) => {
               seller: p.data.seller
           };
       })
-      .sort(sortByDate);
+      .sort((a,b) => {return b.date_posted.seconds-a.date_posted.seconds});
       setProducts(newProducts);
   })
     .catch((err) => console.log(err))
 }, [change])
 
-const sortByDate = (productA, productB) => {
-  return productA.date_posted < productB.date_posted
-      ? -1
-      : (productA.date_posted > productB.date_posted ? 1 : 0);
-};
-
   const createProduct = async () => {
+    let newErrors = {
+      name: false,
+      price: false,
+      desc: false,
+      img: false,
+      category: false
+    };
 
-    /* IF AWS WORKS
-    const ReactS3Client = new S3(config)
-    ReactS3Client.uploadFile(file, file.name)
-      .then(data => setNewProductImage(data.location))
-      .catch(err => console.error(err))
-    */
+    if (!newProductName) {
+      newErrors.name = true;
+    }
 
-    //if(newProductImage) {
+    if (!newProductPrice) {
+      newErrors.price = true;
+    }
+
+    if (!newProductDescription) {
+      newErrors.desc = true;
+    }
+
+    if (!newProductImage) {
+      newErrors.img = true;
+    }
+
+    if (!newProductCategory) {
+      newErrors.category = true;
+    }
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).filter(x => x).length > 0) {
+      setErrorMsg("One or more fields still need to be filled in.")
+      return;
+    } else {
+      setErrorMsg(null);
+    }
       const res = await axios.post(
         "products",
         {
@@ -115,123 +123,129 @@ const sortByDate = (productA, productB) => {
         })
       setProducts([...products, res.data]);
       setChange(change + 1);
-    //}
+
+      setNewProductName(null);
+      setNewProductPrice(null);
+      setNewProductDescription(null);
+      setNewProductImage(null);
+      setNewProductCategory(null);
+      textInput1.current.value = "";
+      textInput2.current.value = "";
+      textInput3.current.value = "";
+      textInput4.current.value = "";
   }
 
-  /*
-  AWS.config.update({
-    accessKey: process.env.accessKey,
-    secretAccessKey: process.env.secretAccessKey,
-  })
-  const myBucket = new AWS.S3({
-    params: {Bucket: s3bucket},
-    region: region,
-})
-  const handleFileInput = (e) => {
-    setSelectedFile(e.target.files[0])  
-  }
-  */
-
-  return (<div style={{  marginLeft: '70px', marginRight: '70px', marginBottom: '70px'}}>
-      <br></br>
-      <br></br>
-      <br></br>
-      <Grid sx={{ marginTop: '1%'}} container spacing={3}>
+  return (<>
+  <Helmet><title>Ushop | My Products</title></Helmet>
+  <div style={{  marginLeft: '70px', marginRight: '70px', marginBottom: '70px'}}>
+    <br></br>
+    <Grid sx={{ marginTop: '1%'}} container spacing={3}>
       <Grid item xs ={3}>
-      <div style={{  textAlign: 'center',}}>
-      <Card variant="outlined" sx={{maxWidth: 300}}>
-        <CardContent>
-          <p><b>Add a new product:</b></p>
-          <TextField
-          id="standard-basic" 
-          variant="standard"
-          helperText = "Product Name"
-          onChange={(e) => setNewProductName(e.target.value)}
-          inputProps={{ defaultValue: null }}
-          />
-          <br></br>
-          <FormControl variant="standard">
-            <FileInput
+        <div style={{  textAlign: 'center',}}>
+        <Card variant="outlined" sx={{width: '300px'}}>
+          <CardContent>
+            <br></br>
+            <Typography color='#709C79' variant='h6'>Add a new product:</Typography>
+            <TextField
+            sx={{ width: '83%' }}
+            id="standard-basic" 
+            variant="standard"
+            type="text"
+            helperText = "Product Name"
+            onChange={(e) => setNewProductName(e.target.value)}
+            inputProps={{ defaultValue: null }}
+            error={errors.name}
+            inputRef={textInput1}
+            />
+            <FormControl variant="standard" sx={{ width: '83%' }}>
+              <FileInput
               id="standard-adornment-amount"
               helperText = "Product Price ($)"
               onChange={(e) => setNewProductPrice(Number(e.target.value))}
               startAdornment={<InputAdornment position="start">$</InputAdornment>}
+              error={errors.price}
+              type="number"
+              inputRef={textInput2}
+              />
+              <FormHelperText id="price-helper-text">Price</FormHelperText>
+            </FormControl>
+            <TextField multiline
+            sx={{ width: '83%' }}
+            id="standard-basic" 
+            variant="standard"
+            helperText = "Product Description"
+            onChange={(e) => setNewProductDescription(e.target.value)}
+            inputProps={{ defaultValue: null }}
+            error={errors.desc}
+            inputRef={textInput3}
             />
-            <FormHelperText id="price-helper-text">Price</FormHelperText>
-          </FormControl>
-          <br></br>
-          <TextField multiline
-          id="standard-basic" 
-          variant="standard"
-          helperText = "Product Description"
-          onChange={(e) => setNewProductDescription(e.target.value)}
-          inputProps={{ defaultValue: null }}
-          />
-          <br></br>
-          {/*ALTERNATIVE TO AWS*/}
-          <TextField multiline
-          id="standard-basic" 
-          variant="standard"
-          helperText = "Product Image Link"
-          onChange={(e) => setNewProductImage(e.target.value)}
-          inputProps={{ defaultValue: null }}
-          />
-          <br></br>
-
-          <FormControl variant="standard" sx={{width: '70%', m: 2}}>
-            <InputLabel id="cat-label">Category</InputLabel>
-            <Select
-            labelId="cat-label" 
-            label="Category" 
-            value={newProductCategory} 
-            sx={{textAlign: 'left'}}
-            onChange={(e) => setNewProductCategory(e.target.value)} > 
-                {categories.map(c => <MenuItem value={c}>{c}</MenuItem>)}
-            </Select>
-          </FormControl>
-          <br></br><br></br>
-          {/*IF AWS WORKS*/}
-          {/*
-          <label htmlFor="contained-button-file">
-          <Input accept="image/*" id="contained-button-file" multiple type="file" onChange={handleFileInput}/>
-          <Button variant="outlined" component="span">Upload Image</Button>
-          </label>
-          {selectedFile ? <p style={{ fontSize: 12 }}>{selectedFile.name}</p>:<p style={{ fontSize: 12 }}> </p>}
-          */}
-          
-          <Button variant="contained" sx= {{  }} onClick={createProduct}>Post</Button>
- 
+            <TextField
+            sx={{ width: '83%' }}
+            id="standard-basic" 
+            variant="standard"
+            helperText = "Product Image Link"
+            onChange={(e) => setNewProductImage(e.target.value)}
+            inputProps={{ defaultValue: null }}
+            error={errors.img}
+            inputRef={textInput4}
+            />
+            <FormControl variant="standard" sx={{width: '83%', m: 2}}>
+              <InputLabel id="cat-label">Category</InputLabel>
+              <Select
+              labelId="cat-label" 
+              label="Category" 
+              value={newProductCategory} 
+              sx={{textAlign: 'left'}}
+              onChange={(e) => setNewProductCategory(e.target.value)}
+              error={errors.category}
+              >
+                {categories.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
+              </Select>
+            </FormControl>
+            <br></br>
+            {
+              errorMsg && <>
+                <Typography
+                  color="error"
+                  sx={{ fontSize: '1rem', marginLeft: '25px', marginRight: '25px' }}
+                >{errorMsg}</Typography>
+                <br></br>
+              </>
+            }
+            <br></br>
+            <Button variant="contained" onClick={createProduct}>Post</Button>
           </CardContent>
         </Card>
         </div>
-        </Grid>
-      <Grid item xs ={9}>
-      <Grid  container spacing={3}>
-        {products.map((p) =>
-        <Grid item xs = {4}>
-        <Card variant="outlined" sx={{maxWidth: 300, maxHeight: 350}}>
-          <CardActionArea component={Link} to="/item" state={{ id: p.id }} >
-              <CardMedia
-              component="img"
-              height="240"
-              width="100%"
-              image={p.image}
-              alt={p.name}
-              title={p.name} 
-              />
-              <CardContent sx={{backgroundColor: '#f5f5f5'}}>
-                <Typography noWrap sx={{fontWeight: 'bold'}} variant="h6">{p.name}</Typography>
-                <Typography>${p.price}</Typography>
-                <Typography noWrap sx={{fontSize: 14}} color="text.secondary">Posted on {p.date_posted && new Date(p.date_posted.seconds*1000).toDateString()}</Typography>
-              </CardContent>
-          </CardActionArea>
-          </Card>
-        </Grid>
-      )}
       </Grid>
+      <Grid item xs ={9}>
+        <Grid  container spacing={3}>
+          {products.map((p) =>
+            <Grid item key={p.id} xs = {4}>
+              <Card variant="outlined" sx={{maxWidth: 300, maxHeight: 350}}>
+                <CardActionArea component={Link} to="/item" state={{ id: p.id }} >
+                  <CardMedia
+                  component="img"
+                  height="240"
+                  width="100%"
+                  image={p.image}
+                  alt={p.name}
+                  title={p.name} 
+                  />
+                  <CardContent sx={{backgroundColor: '#f5f5f5'}}>
+                    <Typography noWrap sx={{fontWeight: 'bold'}} variant="h6">{p.name}</Typography>
+                    <Typography>${p.price}</Typography>
+                    <Typography noWrap sx={{fontSize: 14}} color="text.secondary">Posted on {p.date_posted && new Date(p.date_posted.seconds*1000).toDateString()}</Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+          )}
+        </Grid>
       </Grid>
     </Grid>
-  </div>);
+  </div>
+  </>);
 };
 
 export default MyProducts;

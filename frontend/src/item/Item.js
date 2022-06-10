@@ -7,6 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useLocation } from "react-router";
 import './Item.css';
 import StarRatings from "react-star-ratings/build/star-ratings";
+import Helmet from "react-helmet";
 const {Timestamp} = require("firebase/firestore")
 
 const modalStyle = {
@@ -37,10 +38,7 @@ const Item = (props) => {
                 'access-token': session.token
             }
         })
-            .then(res => {
-                console.log(res);
-                setItem(res.data)
-            })
+            .then(res => setItem(res.data))
             .catch(e => console.error(e));
     }, []);
 
@@ -62,6 +60,7 @@ const Item = (props) => {
     
     return (
     <>
+    <Helmet><title>Ushop | {item.name}</title></Helmet>
     <Box
         width='100vw'
         display='flex'
@@ -224,7 +223,6 @@ const Item = (props) => {
                             date: Timestamp.fromDate(new Date())
                         };
                         newRatings[session.uid] = review;
-                        console.log(newRatings);
                         setItem({
                             ...item,
                             ratings: newRatings
