@@ -2,9 +2,10 @@ import styled from "@emotion/styled";
 import Button from '@mui/material/Button';
 import { useLocation } from "react-router";
 import {Link} from "react-router-dom";
-
 import Layout from "./Layout";
-import Row from "./Row";
+import Typography from '@mui/material/Typography';
+import { SessionContext } from '../Context'
+import { useEffect, useState, useContext, useReducer } from 'react';
 
 const Container = styled.div`
   width: 475px;
@@ -13,25 +14,21 @@ const Container = styled.div`
   color: #000;
 `;
 
-const Title = styled.div`
-  font-size: 58px;
-`;
-
-const Message = styled.div`
-  margin-top: 40px;
-`;
-
 export default (props) => {
+  const session = useContext(SessionContext);
   const location = useLocation();
   const price = location.state?.price;
+
+  useEffect(() => {
+  }, [])
 
   return (
     <Layout title="Success!">
       <Container>
-        <Title></Title>
-        <Message>Your payment of ${price} has been processed.</Message>
-        <br></br>
-        <Button component={Link} to="/products">Return to Product List</Button>
+      <br></br><br></br>
+        <Typography variant='h5'>Your payment of ${price} has been processed.</Typography>
+        <br></br><br></br>
+        <Button size='large' component={Link} to="/products">Return to Product List</Button>
       </Container>
     </Layout>
   );

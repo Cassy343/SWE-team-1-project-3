@@ -28,10 +28,6 @@ const CheckoutForm = ({ price, onSuccessfulCheckout }) => {
   const stripe = useStripe();
   const elements = useElements();
 
-  // TIP
-  // use the cardElements onChange prop to add a handler
-  // for setting any errors:
-
   const handleCardDetailsChange = ev => {
     ev.error ? setCheckoutError(ev.error.message) : setCheckoutError();
   };
@@ -47,112 +43,100 @@ const CheckoutForm = ({ price, onSuccessfulCheckout }) => {
         line1: ev.target.address.value,
         state: ev.target.state.value,
         postal_code: ev.target.zip.value
-      }
-    };
-
-    setProcessingTo(true);
-
-    const cardElement = elements.getElement("card");
-
-    try {
-      const { data: clientSecret } = await axios.post("http://localhost:8000/payment_intents/", {
-        amount: (price * 100).toFixed(0)
-      });
-
-      const paymentMethodReq = await stripe.createPaymentMethod({
-        type: "card",
-        card: cardElement,
-        billing_details: billingDetails
-      });
-
-      if (paymentMethodReq.error) {
-        setCheckoutError(paymentMethodReq.error.message);
-        setProcessingTo(false);
-        return;
-      }
-
-      const { error } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: paymentMethodReq.paymentMethod.id
-      });
-
-      if (error) {
-        setCheckoutError(error.message);
-        setProcessingTo(false);
-        return;
-      }
-
-      onSuccessfulCheckout("/success");
-    } catch (err) {
-      setCheckoutError(err.message);
     }
   };
 
-  // Learning
-  // A common ask/bug that users run into is:
-  // How do you change the color of the card element input text?
-  // How do you change the font-size of the card element input text?
-  // How do you change the placeholder color?
-  // The answer to all of the above is to use the `style` option.
-  // It's common to hear users confused why the card element appears impervious
-  // to all their styles. No matter what classes they add to the parent element
-  // nothing within the card element seems to change. The reason for this is that
-  // the card element is housed within an iframe and:
-  // > styles do not cascade from a parent window down into its iframes
+  setProcessingTo(true);
 
-  const iframeStyles = {
-    base: {
-      color: "#1D5929",
-      fontSize: "16px",
-      iconColor: "#fff",
-      "::placeholder": {
-        color: "#709C79"
-      }
-    },
-    invalid: {
-      iconColor: "red",
+  const cardElement = elements.getElement("card");
+
+  try {
+    const { data: clientSecret } = await axios.post("http://localhost:8000/payment_intents/", {
+      amount: (price * 100).toFixed(0)
+    });
+
+    const paymentMethodReq = await stripe.createPaymentMethod({
+      type: "card",
+      card: cardElement,
+      billing_details: billingDetails
+    });
+
+    if (paymentMethodReq.error) {
+      setCheckoutError(paymentMethodReq.error.message);
+      setProcessingTo(false);
+      return;
+    }
+
+    const { error } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: paymentMethodReq.paymentMethod.id
+    });
+
+    if (error) {
+      setCheckoutError(error.message);
+      setProcessingTo(false);
+      return;
+    }
+
+    onSuccessfulCheckout("/success");
+  } catch (err) {
+    setCheckoutError(err.message);
+  }
+};
+
+const iframeStyles = {
+  base: {
+    color: "#1D5929",
+    fontSize: "16px",
+    iconColor: "#fff",
+    "::placeholder": {
       color: "#709C79"
-    },
-    complete: {
-      iconColor: "#1D5929"
     }
-  };
+  },
+  invalid: {
+    iconColor: "red",
+    color: "#709C79"
+  },
+  complete: {
+    iconColor: "#1D5929"
+  }
+};
 
-  const cardElementOpts = {
-    iconStyle: "solid",
-    style: iframeStyles,
-    hidePostalCode: true
-  };
+const cardElementOpts = {
+  iconStyle: "solid",
+  style: iframeStyles,
+  hidePostalCode: true
+};
 
   return (
     <div style={{  textAlign: 'center',}}>
-    <Typography variant='h4'>Checkout</Typography>
-    <br></br>
-    <Grid container spacing={3}>
-      <Grid item xs={4}>
-        <p></p>
-      </Grid>
-      <Grid item xs={4}>
-        <form onSubmit={handleFormSubmit}> 
+      <Typography variant='h4'>Checkout</Typography>
+      <br></br>
+      <Grid container spacing={3}>
+        <Grid item xs={4}>
+          <p></p>
+        </Grid>
+        <Grid item xs={4}>
+          <form onSubmit={handleFormSubmit}> 
             <BillingDetailsFields />
-          <Row>
-            <CardElementContainer>
-              <CardElement
-                options={cardElementOpts}
-                onChange={handleCardDetailsChange}
-              />
-            </CardElementContainer>
-          </Row>
-          {checkoutError && <CheckoutError>{checkoutError}</CheckoutError>}
-          <Row>
-            <SubmitButton disabled={isProcessing || !stripe}>
-              {isProcessing ? "Processing..." : `Pay $${price}`}
-            </SubmitButton>
-          </Row>
-        </form>
-      </Grid>
-      <Grid item xs={4}>
-        <p></p>
-      </Grid>
+            <Row>
+              <CardElementContainer>
+                <CardElement
+                  options={cardElementOpts}
+                  onChange={handleCardDetailsChange}
+                />
+              </CardElementContainer>
+            </Row>
+            {checkoutError && <CheckoutError>{checkoutError}</CheckoutError>}
+            <Row>
+              <SubmitButton disabled={isProcessing || !stripe}><Typography><b>
+                {isProcessing ? "Processing..." : `Pay $${price}`}</b></Typography>
+              </SubmitButton>
+            </Row>
+          </form>
+        </Grid>
+        <Grid item xs={4}>
+          <p></p>
+        </Grid>
     </Grid>
     </div>
   );
