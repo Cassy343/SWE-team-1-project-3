@@ -20,7 +20,7 @@ function Receipt(props) {
     getSubtotal(products);
     setTotalTaxes(TAX_RATE * subtotalPrice);
     setTotalPrice(totalTaxes + subtotalPrice);
-
+    props.setPrice(totalPrice)
   }, [subtotalPrice, products, totalPrice, totalTaxes])
 
   const ccyFormat = (num) => `$ ${num.toFixed(2)}`

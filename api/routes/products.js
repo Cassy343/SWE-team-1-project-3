@@ -77,7 +77,7 @@ router.post('/', async (req, res, next) => {
 
     const product = {
         name: req.body.name,
-        price: Number(req.body.price),
+        price: Number(req.body.price).toFixed(2),
         description: req.body.description,
         image: req.body.image,
         date_posted: Timestamp.fromDate(new Date()),
